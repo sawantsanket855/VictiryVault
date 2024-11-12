@@ -171,25 +171,6 @@ import "./scorecard.dart";
                       ],
                     ),
                   ),
-
-                  Positioned(
-                    right: 5,
-                    bottom: 5,
-                    child: Container(
-                      alignment: Alignment.center,
-                              width: 60,
-                              decoration:const BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(5)),
-                                color: Colors.red,
-                              ),
-                              child:const Text ("Live",
-                              style: TextStyle(
-                                fontSize: 11,
-                              ),
-                              ),
-
-                              ),
-                  ),
               ],
               
              ),
@@ -368,25 +349,6 @@ import "./scorecard.dart";
                       ],
                     ),
                   ),
-
-                  Positioned(
-                    right: 5,
-                    bottom: 5,
-                    child: Container(
-                      alignment: Alignment.center,
-                              width: 60,
-                              decoration:const BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(5)),
-                                color: Color.fromARGB(255, 16, 246, 24),
-                              ),
-                              child:const Text ("Completed",
-                              style: TextStyle(
-                                fontSize: 11,
-                              ),
-                              ),
-
-                              ),
-                  ),
               ],
               
              ),
@@ -542,25 +504,6 @@ Widget matchCardUpcoming(){
                         ),
                       ],
                     ),
-                  ),
-
-                  Positioned(
-                    right: 5,
-                    bottom: 5,
-                    child: Container(
-                      alignment: Alignment.center,
-                              width: 60,
-                              decoration:const BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(5)),
-                                color: Color.fromARGB(255, 219, 246, 16),
-                              ),
-                              child:const Text ("Upcoming",
-                              style: TextStyle(
-                                fontSize: 11,
-                              ),
-                              ),
-
-                              ),
                   ),
               ],
               

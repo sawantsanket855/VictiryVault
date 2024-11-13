@@ -1,6 +1,8 @@
  import "package:flutter/material.dart";
+import "package:flutter_application_1/detailed_schedule.dart";
 //  import "./schedule.dart";
 import "./schedule_diagram.dart";
+import "./detailed_schedule.dart";
 //  import "./groups.dart";
  void main(){
   runApp(const MyApp());
@@ -11,7 +13,7 @@ import "./schedule_diagram.dart";
   @override
   Widget build(BuildContext context){
     return const MaterialApp(
-      home:ScheduleDiagramApp(),
+      home:DetailedSchedule(),
     );
   }
  }

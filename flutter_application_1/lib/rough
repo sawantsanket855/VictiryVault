@@ -1,0 +1,70 @@
+showDialog(context: context, builder:(BuildContext context){
+                  return SimpleDialog(
+              title:const Text('Wicket'),
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      children: [
+                        const Text("Batsman"),
+                        SimpleDialogOption(
+                       onPressed: () { },
+                            child:const Text('Option 1'),
+                         ),
+                         SimpleDialogOption(
+                       onPressed: () { },
+                            child:const Text('Option 1'),
+                         ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        const Text("type"),
+                        SimpleDialogOption(
+                       onPressed: () { },
+                            child:const Text('Catch'),
+                         ),
+                         SimpleDialogOption(
+                       onPressed: () { },
+                            child:const Text('RunOut'),
+                         ),
+                         SimpleDialogOption(
+                       onPressed: () { },
+                            child:const Text('Bowed'),
+                         ),
+                         SimpleDialogOption(
+                       onPressed: () { },
+                            child:const Text('LBW'),
+                         ),
+                         SimpleDialogOption(
+                       onPressed: () { },
+                            child:const Text('Hit Wicket'),
+                         ),
+                         SimpleDialogOption(
+                       onPressed: () { },
+                            child:const Text('Stumped'),
+                         ),
+                         SimpleDialogOption(
+                       onPressed: () { },
+                            child:const Text('Obstracting field'),
+                         ),
+                         SimpleDialogOption(
+                       onPressed: () { },
+                            child:Text(name),
+                         ),
+                         ElevatedButton(onPressed: (){
+                           name="rohan";
+
+                          setState(() {});
+                         },
+			 child:const Text("change") ),
+                      ],
+                    ),
+                    
+                  ],
+                ),
+       ],
+  );
+                }
+                );

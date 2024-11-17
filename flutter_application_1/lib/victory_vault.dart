@@ -15,8 +15,29 @@ class _VictoryVaultState extends State{
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 36, 38, 39),
       appBar: AppBar(
+        leading:Builder(
+          builder: (context) {
+            return GestureDetector(
+                onTap:(){
+                    Scaffold.of(context).openDrawer();
+                },
+              child: const Icon(
+                Icons.menu,
+                color: Colors.white,
+                size:30,
+              ),
+              );
+          }
+        ),
         actions:const [
-           Icon(Icons.leaderboard,
+          Text("Login",
+          style:TextStyle(
+          color: Colors.white,
+          fontSize:15,
+          fontWeight:FontWeight.w500
+        ),
+          ),
+           Icon(Icons.login,
            color: Colors.white,
            ),
         ],
@@ -28,6 +49,7 @@ class _VictoryVaultState extends State{
         ),
         ),
         backgroundColor: const Color.fromARGB(255, 5, 57, 101),
+        
       ),
       body:Column(
         children: [
@@ -94,7 +116,8 @@ class _VictoryVaultState extends State{
                   Container(
                     decoration:const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
-                          color: Colors.blue,
+                          // color: Colors.blue,
+                          color:Color.fromARGB(255, 32, 100, 160),
                         ),
                     
                     child: Column(
@@ -225,6 +248,38 @@ class _VictoryVaultState extends State{
             ),
           ),
         ],
+      ),
+      drawer: Drawer(
+        // width:220,
+        child:ListView(
+          children: [
+      const SizedBox(height:50),
+      ListTile(
+        title: const Text('Item 1'),
+        onTap: () {
+          // Update the state of the app.
+          // ...
+        },
+      ),
+      const Divider(),
+      ListTile(
+        title: const Text('Item 2'),
+        onTap: () {
+          // Update the state of the app.
+          // ...
+        },
+      ),
+       const Divider(),
+       ListTile(
+        title: const Text('Item 2'),
+        onTap: () {
+          // Update the state of the app.
+          // ...
+        },
+      ),
+      const Divider(),
+          ],
+        ),
       ),
     );
   }

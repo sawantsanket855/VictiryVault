@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "992087814619",
+    "project_id": "victoryvault-71490",
+    "storage_bucket": "victoryvault-71490.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:992087814619:android:9cb13170e4a6e9f27df7fe",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqC9rE-6RV1GP-LaFAAjn_nqQKKNLQ7-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

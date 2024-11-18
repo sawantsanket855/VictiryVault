@@ -160,7 +160,8 @@ class _DetailedScheduleState extends State {
                                   color: index == 1 ? Colors.blue : null,
                                   borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(10),
-                                      topRight: Radius.circular(10))),
+                                      topRight: Radius.circular(10)),
+                                      ),
                               child: const Text(
                                 "Group A",
                                 style: TextStyle(
@@ -201,9 +202,9 @@ class _DetailedScheduleState extends State {
                                         clipBehavior: Clip.antiAlias,
                                         decoration:const BoxDecoration(
                                           borderRadius: BorderRadius.all(Radius.circular(10)),
-                                          color:Colors.grey,
+                                          color:Color.fromARGB(255, 9, 9, 9),
                                         ),
-                              child: Image.asset("assets/schedule_diagram/team8.png", fit: BoxFit.fill,)),
+                              child: Image.asset("assets/schedule_diagram/team8r.png", fit: BoxFit.fill,)),
                                       
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,

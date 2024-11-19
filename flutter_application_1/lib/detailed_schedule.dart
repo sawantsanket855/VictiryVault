@@ -1,5 +1,38 @@
-import "package:flutter/material.dart";
+import 'dart:developer';
 
+import "package:flutter/material.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
+dynamic dataMatch;
+dynamic dataList;
+dynamic dataTeams;
+Map cricketTeams={};
+Map cricketMatch={};
+Future getData1()async{
+  var response = await FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").get();
+  var response1 = await FirebaseFirestore.instance.collection("cricket_match").get();
+  var response2 = await FirebaseFirestore.instance.collection("cricket_teams").get();
+  dataTeams=response2.docs;
+  dataList=response;
+  dataMatch = response1.docs;
+  for(int i=0;i<dataMatch.length;i++){
+    cricketMatch[dataMatch[i]["id"]]={"team1":dataMatch[i]["team1"],"team2":dataMatch[i]["team2"]};
+  }
+ for(int i=0;i<dataTeams.length;i++){
+    cricketTeams[dataTeams[i]["id"]]=dataTeams[i]["name"];
+  }
+print(cricketTeams[cricketMatch[dataList["cricket"][0]]["team1"]]);
+  // print(cricketMatch[dataList["cricket"][0]]["team1"]);
+  // print(cricketTeams);
+  // print(cricketMatch);
+
+
+    log(dataMatch[0]["team2"]);
+
+    log(dataMatch[0]["team1"]);
+  
+}
+
+int curGroup=0;
 class DetailedSchedule extends StatefulWidget {
   const DetailedSchedule({super.key});
   @override
@@ -133,279 +166,283 @@ class _DetailedScheduleState extends State {
           Expanded(
             child: ListView(
               children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  decoration:const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    color:Colors.white,
-                  ),
-                  
-                  child: Column(
-                    children: [
-                      Container(
-                        color: Colors.white,
-                        margin: const EdgeInsets.only(top: 10),
-                        height: 45,
-                        width: MediaQuery.of(context).size.width,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: 4,
-                          itemBuilder: (context, index) {
-                            return Container(
+                Column(
+                  children: [
+                    Container(
+                      // color: Colors.white,
+                      margin: const EdgeInsets.only(top: 10,bottom: 10),
+                      height: 45,
+                      width: MediaQuery.of(context).size.width,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 4,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              curGroup = index;
+                              setState(() {});
+                            },
+                            child: Container(
                               alignment: Alignment.center,
-                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              // margin: const EdgeInsets.symmetric(horizontal:2),
                               height: 50,
-                              width: MediaQuery.of(context).size.width / 4 - 10,
+                              width:
+                                  MediaQuery.of(context).size.width / 4 - 10,
                               decoration: BoxDecoration(
-                                  color: index == 1 ? Colors.blue : null,
-                                  borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(10),
-                                      topRight: Radius.circular(10)),
-                                      ),
-                              child: const Text(
-                                "Group A",
-                                style: TextStyle(
+                                color: index == curGroup ? Colors.blue : null,
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(10),),
+                              ),
+                              child: Text(
+                                index == 0
+                                    ? "Group A"
+                                    : index == 1
+                                        ? "Group B"
+                                        : index == 3
+                                            ? "Group D"
+                                            : "Group D",
+                                style: const TextStyle(
+                                  color: Colors.white,
                                   fontSize: 16,
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      ),
-                  
-                    Container(
-                    alignment: Alignment.center,
-                    height:430,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: const BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
                             ),
-                  
-                        child:ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            Container(
-                                        margin:const EdgeInsets.only(right:10,left:10,top:15),
-                                        height:400,
-                                        width:400,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                                          // color:Colors.grey,
-                                        ),
-                                      
-                                        child:Stack(
-                                          children: [
-                            Container(
-                              height:400,
-                                        width:400,
-                                        clipBehavior: Clip.antiAlias,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                                          color:Color.fromARGB(255, 9, 9, 9),
-                                        ),
-                              child: Image.asset("assets/schedule_diagram/team8r.png", fit: BoxFit.fill,)),
-                                      
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(width:4),
-                                  Column(
-                                    children: [
-                                      Container(
-                                        margin:const EdgeInsets.only(top:4),
-                                        height: 28,
-                                        width:70,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Colors.green,
-                                        ),
-                                        child:const Text("Team1"),
-                                        ),
-                                        Container(
-                                        margin:const EdgeInsets.only(top:30),
-                                        height: 28,
-                                        width:70,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Colors.red,
-                                        ),
-                                        child:const Text("Team2"),
-                                        ),
-                                        Container(
-                                        margin:const EdgeInsets.only(top:15),
-                                        height: 28,
-                                        width:70,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Colors.red,
-                                        ),
-                                        child:const Text("Team3"),
-                                        ),
-                                        Container(
-                                        margin:const EdgeInsets.only(top:30),
-                                        height: 29,
-                                        width:70,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Colors.green,
-                                        ),
-                                        child:const Text("Team4"),
-                                        ),
-                                        Container(
-                                        margin:const EdgeInsets.only(top:14),
-                                        height: 29,
-                                        width:70,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Colors.red,
-                                        ),
-                                        child:const Text("Team5"),
-                                        ),
-                                        Container(
-                                        margin:const EdgeInsets.only(top:30),
-                                        height: 28,
-                                        width:70,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Colors.green,
-                                        ),
-                                        child:const Text("Team6"),
-                                        ),
-                                        Container(
-                                        margin:const EdgeInsets.only(top:16),
-                                        height: 29,
-                                        width:70,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Colors.green,
-                                        ),
-                                        child:const Text("Team7"),
-                                        ),
-                                        Container(
-                                        margin:const EdgeInsets.only(top:30),
-                                        height: 28,
-                                        width:71,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Colors.red,
-                                        ),
-                                        child:const Text("Team8"),
-                                        ),
-                                    ],
-                                  ),
-                                  const SizedBox(width:36),
-                                      
-                                  Column(
-                                    children:[
-                                      
-                                       Container(
-                                        margin:const EdgeInsets.only(top:33),
-                                        height: 28,
-                                        width:71,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Colors.green,
-                                        ),
-                                        child:const Text("Team1",
-                                        ),
-                                        ),
-                                        Container(
-                                        margin:const EdgeInsets.only(top:73),
-                                        height: 29,
-                                        width:72,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Colors.red,
-                                        ),
-                                        child:const Text("Team4"),
-                                        ),
-                                        Container(
-                                        margin:const EdgeInsets.only(top:72),
-                                        height: 28,
-                                        width:72,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Color.fromARGB(255, 198, 198, 198),
-                                        ),
-                                        child:const Text("Team6"),
-                                        ),
-                                        Container(
-                                        margin:const EdgeInsets.only(top:75),
-                                        height: 28,
-                                        width:71,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Color.fromARGB(255, 198, 198, 198),
-                                        ),
-                                        child:const Text("Team7"),
-                                        ),
-                                        ],
-                                  ),
-                                  const SizedBox(width: 38,),
-                                      
-                                  Column(
-                                    children: [
-                                      Container(
-                                        margin:const EdgeInsets.only(top:91),
-                                        height: 28,
-                                        width:70,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Color.fromARGB(255, 198, 198, 198),
-                                        ),
-                                        child:const Text("Winner"),
-                                        ),
-                                        Container(
-                                        margin:const EdgeInsets.only(top:176),
-                                        height: 28,
-                                        width:70,
-                                        alignment: Alignment.center,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color: Color.fromARGB(255, 198, 198, 198),
-                                        ),
-                                        child:const Text("Winner"),
-                                        ),
-                                    ],
-                                  ),
-                                  const SizedBox(width:37),
-                                      
-                                  Container(
-                                        margin:const EdgeInsets.only(top:193),
-                                        height: 28,
-                                        width:71,
-                                        decoration:const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          color:  Color.fromARGB(255, 198, 198, 198),
-                                        ),
-                                        alignment: Alignment.center,
-                                        child:const Text("Winner7"),
-                                        ),
-                                      
-                                ],
-                              ),
-                                          ],
-                                        ),
+                          );
+                        },
+                      ),
+                    ),
+                
+                  Container(
+                  alignment: Alignment.center,
+                  height:400,
+                  width: 400,
+                  decoration: const BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                      child:ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          Container(
+                                      // margin:const EdgeInsets.only(right:10,left:10,top:15),
+                                      height:400,
+                                      width:400,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                                        // color:Colors.grey,
                                       ),
-                          ],
-                        ),
-                  ),
-                    ],
-                  ),
+                                    
+                                      child:Stack(
+                                        children: [
+                          Container(
+                            height:400,
+                                      width:400,
+                                      clipBehavior: Clip.antiAlias,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                                        color:Color.fromARGB(255, 9, 9, 9),
+                                      ),
+                            child: Image.asset("assets/schedule_diagram/team8r.png", fit: BoxFit.fill,)),
+                                    
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(width:4),
+                                Column(
+                                  children: [
+                                    Container(
+                                      margin:const EdgeInsets.only(top:4),
+                                      height: 28,
+                                      width:70,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Colors.green,
+                                      ),
+                                      child:const Text("Team1"),
+                                      ),
+                                      Container(
+                                      margin:const EdgeInsets.only(top:30),
+                                      height: 28,
+                                      width:70,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Colors.red,
+                                      ),
+                                      child:const Text("Team2"),
+                                      ),
+                                      Container(
+                                      margin:const EdgeInsets.only(top:15),
+                                      height: 28,
+                                      width:70,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Colors.red,
+                                      ),
+                                      child:const Text("Team3"),
+                                      ),
+                                      Container(
+                                      margin:const EdgeInsets.only(top:30),
+                                      height: 29,
+                                      width:70,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Colors.green,
+                                      ),
+                                      child:const Text("Team4"),
+                                      ),
+                                      Container(
+                                      margin:const EdgeInsets.only(top:14),
+                                      height: 29,
+                                      width:70,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Colors.red,
+                                      ),
+                                      child:const Text("Team5"),
+                                      ),
+                                      Container(
+                                      margin:const EdgeInsets.only(top:30),
+                                      height: 28,
+                                      width:70,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Colors.green,
+                                      ),
+                                      child:const Text("Team6"),
+                                      ),
+                                      Container(
+                                      margin:const EdgeInsets.only(top:16),
+                                      height: 29,
+                                      width:70,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Colors.green,
+                                      ),
+                                      child:const Text("Team7"),
+                                      ),
+                                      Container(
+                                      margin:const EdgeInsets.only(top:30),
+                                      height: 28,
+                                      width:71,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Colors.red,
+                                      ),
+                                      child:const Text("Team8"),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(width:36),
+                                    
+                                Column(
+                                  children:[
+                                    
+                                     Container(
+                                      margin:const EdgeInsets.only(top:33),
+                                      height: 28,
+                                      width:71,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Colors.green,
+                                      ),
+                                      child:const Text("Team1",
+                                      ),
+                                      ),
+                                      Container(
+                                      margin:const EdgeInsets.only(top:73),
+                                      height: 29,
+                                      width:72,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Colors.red,
+                                      ),
+                                      child:const Text("Team4"),
+                                      ),
+                                      Container(
+                                      margin:const EdgeInsets.only(top:72),
+                                      height: 28,
+                                      width:72,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Color.fromARGB(255, 198, 198, 198),
+                                      ),
+                                      child:const Text("Team6"),
+                                      ),
+                                      Container(
+                                      margin:const EdgeInsets.only(top:75),
+                                      height: 28,
+                                      width:71,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Color.fromARGB(255, 198, 198, 198),
+                                      ),
+                                      child:const Text("Team7"),
+                                      ),
+                                      ],
+                                ),
+                                const SizedBox(width: 38,),
+                                    
+                                Column(
+                                  children: [
+                                    Container(
+                                      margin:const EdgeInsets.only(top:91),
+                                      height: 28,
+                                      width:70,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Color.fromARGB(255, 198, 198, 198),
+                                      ),
+                                      child:const Text("Winner"),
+                                      ),
+                                      Container(
+                                      margin:const EdgeInsets.only(top:176),
+                                      height: 28,
+                                      width:70,
+                                      alignment: Alignment.center,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color: Color.fromARGB(255, 198, 198, 198),
+                                      ),
+                                      child:const Text("Winner"),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(width:37),
+                                    
+                                Container(
+                                      margin:const EdgeInsets.only(top:193),
+                                      height: 28,
+                                      width:71,
+                                      decoration:const BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                                        color:  Color.fromARGB(255, 198, 198, 198),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child:const Text("Winner7"),
+                                      ),
+                                    
+                              ],
+                            ),
+                                        ],
+                                      ),
+                                    ),
+                        ],
+                      ),
+                ),
+                  ],
                 ),
             
                 const SizedBox(height: 10,),
@@ -540,7 +577,7 @@ class _DetailedScheduleState extends State {
                   child:ListView.builder(
                     shrinkWrap: true,
                     physics:const NeverScrollableScrollPhysics(),
-                    itemCount: 10,
+                    itemCount:dataList["cricket"].length ,
                     itemBuilder: (context ,index){
                       return 
                       Container(
@@ -556,8 +593,8 @@ class _DetailedScheduleState extends State {
                         child:Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                          children:[ 
-                          const Text("Match : 01",
-                          style:TextStyle(
+                          Text("Match : ${index+1}",
+                          style:const TextStyle(
                             fontWeight: FontWeight.w500,
                           ),
                           ),
@@ -567,8 +604,9 @@ class _DetailedScheduleState extends State {
                             Container(
                               alignment: Alignment.bottomRight,
                               width:100,
-                              child: const Text("Team A",
-                                style:TextStyle(
+                              child:Text(
+                                cricketMatch[dataList["cricket"][index]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index]]["team1"]]:cricketMatch[dataList["cricket"][index]]["team1"],
+                                style:const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
                           ),
@@ -582,8 +620,9 @@ class _DetailedScheduleState extends State {
                             Container(
                               alignment: Alignment.bottomLeft,
                               width:100,
-                              child: const Text("Team B",
-                              style:TextStyle(
+                              child:Text(
+                                cricketMatch[dataList["cricket"][index]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index]]["team2"]]:cricketMatch[dataList["cricket"][index]]["team2"],
+                              style:const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
                           ),

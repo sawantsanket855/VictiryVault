@@ -10,6 +10,8 @@ import 'package:firebase_core/firebase_core.dart';
  void main()async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options:const FirebaseOptions(apiKey: "AIzaSyBqC9rE-6RV1GP-LaFAAjn_nqQKKNLQ7-w", appId: "1:992087814619:android:9cb13170e4a6e9f27df7fe", messagingSenderId: "992087814619", projectId: "victoryvault-71490"));
+  // await initializeData();
+  await getData1();
   runApp(const MyApp());
   // getData();
  }

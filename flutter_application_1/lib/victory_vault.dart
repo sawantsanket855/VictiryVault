@@ -58,19 +58,24 @@ class _VictoryVaultState extends State{
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children:[
-                      Container(
-                        height:45,
-                        width:120,
-                        decoration:const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          color: Colors.white,
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset("assets/Cricket.png"),
-                            const Text("Cricket"),
-                          ],
+                      GestureDetector(
+                        onTap: (){
+                          
+                        },
+                        child: Container(
+                          height:45,
+                          width:120,
+                          decoration:const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            color: Colors.white,
                           ),
+                          child: Row(
+                            children: [
+                              Image.asset("assets/Cricket.png"),
+                              const Text("Cricket"),
+                            ],
+                            ),
+                        ),
                       ),
                       Container(
                         height:45,

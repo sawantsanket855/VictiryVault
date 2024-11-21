@@ -1,4 +1,6 @@
+
 import "package:flutter/material.dart";
+import './detailed_schedule.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 Color? backgroundColor= const Color.fromARGB(255, 36, 38, 39);
@@ -19,9 +21,6 @@ Future initializeData() async {
       await FirebaseFirestore.instance.collection("cricket_teams").get();
   data = response.docs;
   teams = data.length;
-  print(data[0]["name"]);
-  print(teams);
-  print(data[0].id);
   for (int i = 0; i < teams; i++) {
     checkTeam.add(false);
   }
@@ -50,8 +49,41 @@ class _ScheduleAppState extends State {
 
     setState(() {});
   }
-
+ void loaderOn(){
+ showDialog(
+  barrierDismissible:false,context: context, builder: (BuildContext dialogContext){
+    return PopScope(
+      canPop:false,
+      child:
+      Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 50,
+              width:50,
+              child: Image.asset("assets/loading1.gif"),
+            ),
+            const SizedBox(height: 5,),
+            const Text("wait while schedule be ready.... ",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),)
+          ],
+        ),
+      )
+    );
+  });
+  
+ }
+  void newScreen(){
+  Navigator.pop(context);
+  Navigator.push(context,MaterialPageRoute(builder: (context){return const DetailedSchedule();}) );
+  }
   void createSchedule() async{
+     loaderOn();
     int matchLimit = 0;
     if (teams < 33 && teams > 16) {
       matchLimit = 4;
@@ -62,17 +94,17 @@ class _ScheduleAppState extends State {
     for (int i = 0; i < groupCount; i++) {
       for (int j = 0; j < matchLimit; j++) {
         if (j < (groups[i]["limit"] - 4)) {
-          match = {"team1":groups[i]["teams"][0],"team2":groups[i]["teams"][1],"type":"round1"};
+          match = {"team1":groups[i]["teams"][0],"team2":groups[i]["teams"][1],"round":"round1"};
           groups[i]["teams"].removeAt(0);
           groups[i]["teams"].removeAt(0);
           var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"null","time":"null"});
           matches.addAll([metaData.id]);
           FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
         } else {
-          match = {"team1":groups[i]["teams"][0],"team2":"bye","type":"round1"};
+          match = {"team1":groups[i]["teams"][0],"team2":"bye","round":"round1"};
           var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"team1","time":"null"});
           matches.addAll([metaData.id]);
           FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
           groups[i]["teams"].removeAt(0);
@@ -82,46 +114,57 @@ class _ScheduleAppState extends State {
     if(teams>16){
       //round2
       for(int i=0;i<8;i++){
-        match = {"team1":"winner ${i*2+1}","team2":"winner ${i*2+2}","dependent1":true,"dependent2":true,"type":"round2"};
+        match = {"team1":"winner ${i*2+1}","team2":"winner ${i*2+2}","round":"round2"};
           var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"null","time":"null"});
           matches.addAll([metaData.id]);
           await FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":1});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+1]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":2});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team1"});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+1]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team2"});
      }
      //round3
      for(int i=0;i<4;i++){
-      match = {"team1":"winner ${i*2+17}","team2":"winner ${i*2+18}","dependent1":true,"dependent2":true,"type":"round3"};
+      match = {"team1":"winner ${i*2+17}","team2":"winner ${i*2+18}","round":"round3"};
           var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"null","time":"null"});
           matches.addAll([metaData.id]);
           await FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+16]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":1});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+17]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":2});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+16]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team1"});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+17]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team2"});
      }
      //semiFinal
      for(int i=0;i<2;i++){
-      match = {"team1":"winner ${i*2+25}","team2":"winner ${i*2+26}","dependent1":true,"dependent2":true,"type":"semiFinal"};
+      match = {"team1":"winner ${i*2+25}","team2":"winner ${i*2+26}","round":"semiFinal"};
           var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"null","time":"null"});
           matches.addAll([metaData.id]);
           await FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+24]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":1});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+25]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":2});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+24]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team1"});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+25]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"twam2"});
      }
      //final
-     match = {"team1":"winner ${29}","team2":"winner ${30}","dependent1":false,"dependent2":false,"type":"Final"};
+     match = {"team1":"winner ${29}","team2":"winner ${30}","round":"Final"};
           var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"null","time":"null"});
           matches.addAll([metaData.id]);
           await FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[28]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":1});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[29]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":2});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[28]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team1"});
+          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[29]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team2"});
 
     }
-    
-    print(matches);
+    var matchList=await FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").get();
+    for (int i = 0; i < groupCount; i++) {
+      for (int j = 0; j < matchLimit; j++) {
+        if (j >= (groups[i]["limit"] - 4)) {
+          var response=await FirebaseFirestore.instance.collection("cricket_match").doc(matchList["cricket"][i*matchLimit+j]).get();
+          await FirebaseFirestore.instance.collection("cricket_match").doc(response["nextMatch"]).update({response["nextTeamNumber"]:response[response["winner"]]});
+        }
+      }
+    }
+  await getData1();
+  newScreen();
+  
+
   }
 
   @override
@@ -280,20 +323,60 @@ class _ScheduleAppState extends State {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Container(
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                           padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                            decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            child: const Text(
-                              "create atomatic",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
+                          GestureDetector(
+                            onTap: (){
+                              selectGroup = true;
+                              if (teams < 33 && teams > 8) {
+                                groupCount = 4;
+                                int rem = teams % 4;
+                                for (int i = 0; i < groupCount; i++) {
+                                  if (rem > i) {
+                                    groups.add(
+                                        {"limit": teams ~/ 4 + 1, "teams": []});
+                                  } else {
+                                    groups.add(
+                                        {"limit": teams ~/ 4, "teams": []});
+                                  }
+                                }
+                              } else if (teams < 9 && teams > 4) {
+                                groupCount = 2;
+                                int rem = teams % 2;
+                                for (int i = 0; i < groupCount; i++) {
+                                  if (rem > i) {
+                                    groups.add(
+                                        {"limit": teams ~/ 2 + 1, "teams": []});
+                                  } else {
+                                    groups.add(
+                                        {"limit": teams ~/ 2, "teams": []});
+                                  }
+                                }
+                              }
+                            int count=0;
+                            for(int i=0;i<groupCount;i++){
+                              for(int j=0;j<groups[i]["limit"];j++){
+                                groups[i]["teams"].add(data[count].id);
+                                checkTeam[count] = true;
+                                count++;
+                              }
+                            }
+                            setState(() {});
+
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                              decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              child: const Text(
+                                "create atomatic",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),

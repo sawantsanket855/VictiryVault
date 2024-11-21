@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_svg: ^2.0.10+1
+  gif: ^2.3.0
   google_fonts: ^6.2.1
 
 dev_dependencies:
@@ -35,9 +36,12 @@ flutter:
     - assets/schedule_diagram/team4.png
     - assets/schedule_diagram/team4f.png
     - assets/schedule_diagram/team2f.png
+    - assets/schedule_diagram/team4r.png
     - assets/Cricket.png
     - assets/football.png
     - assets/sports.png
     - assets/label_style.png
     - assets/schedule.png
     - assets/battle.png
+    - assets/loading.gif
+    - assets/loading1.gif

@@ -15,12 +15,12 @@ Future getData1()async{
   dataList=response;
   dataMatch = response1.docs;
   for(int i=0;i<dataMatch.length;i++){
-    cricketMatch[dataMatch[i]["id"]]={"team1":dataMatch[i]["team1"],"team2":dataMatch[i]["team2"]};
+    cricketMatch[dataMatch[i]["id"]]={"team1":dataMatch[i]["team1"],"team2":dataMatch[i]["team2"],"winner":dataMatch[i]["winner"]};
   }
  for(int i=0;i<dataTeams.length;i++){
     cricketTeams[dataTeams[i]["id"]]=dataTeams[i]["name"];
   }
-print(cricketTeams[cricketMatch[dataList["cricket"][0]]["team1"]]);
+// print(cricketTeams[cricketMatch[dataList["cricket"][0]]["team1"]]);
   // print(cricketMatch[dataList["cricket"][0]]["team1"]);
   // print(cricketTeams);
   // print(cricketMatch);
@@ -40,6 +40,86 @@ class DetailedSchedule extends StatefulWidget {
 }
 
 class _DetailedScheduleState extends State {
+  
+  Color? teamColor(int index){
+    if(index%2==0){
+    if(curGroup==0){
+      return cricketMatch[dataList["cricket"][index~/2]]["winner"]=="team1"?
+      Colors.green:
+      cricketMatch[dataList["cricket"][index~/2]]["winner"]=="team2"?
+      Colors.red:
+      const Color.fromARGB(255, 198, 198, 198);
+    }else if(curGroup==1){
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?4:index>32&&index<48?2:1)]]["winner"]=="team1"?
+      Colors.green:
+      cricketMatch[dataList["cricket"][index~/2+(index<32?4:index>32&&index<48?2:1)]]["winner"]=="team2"?
+      Colors.red:
+      const Color.fromARGB(255, 198, 198, 198);
+    }else if(curGroup==2){
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?8:index>32&&index<48?4:2)]]["winner"]=="team1"?
+      Colors.green:
+      cricketMatch[dataList["cricket"][index~/2+(index<32?8:index>32&&index<48?4:2)]]["winner"]=="team2"?
+      Colors.red:
+      const Color.fromARGB(255, 198, 198, 198);
+    }else{
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?12:index>32&&index<48?6:3)]]["winner"]=="team1"?
+      Colors.green:
+      cricketMatch[dataList["cricket"][index~/2+(index<32?12:index>32&&index<48?6:3)]]["winner"]=="team2"?
+      Colors.red:
+      const Color.fromARGB(255, 198, 198, 198);
+    }
+  }else{
+    if(curGroup==0){
+      return cricketMatch[dataList["cricket"][index~/2]]["winner"]=="team2"?
+      Colors.green:
+      cricketMatch[dataList["cricket"][index~/2]]["winner"]=="team1"?
+      Colors.red:
+      const Color.fromARGB(255, 198, 198, 198);
+    }else if(curGroup==1){
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?4:index>32&&index<48?2:1)]]["winner"]=="team2"?
+      Colors.green:
+      cricketMatch[dataList["cricket"][index~/2+(index<32?4:index>32&&index<48?2:1)]]["winner"]=="team1"?
+      Colors.red:
+      const Color.fromARGB(255, 198, 198, 198);
+    }else if(curGroup==2){
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?8:index>32&&index<48?4:2)]]["winner"]=="team2"?
+      Colors.green:
+      cricketMatch[dataList["cricket"][index~/2+(index<32?8:index>32&&index<48?4:2)]]["winner"]=="team1"?
+      Colors.red:
+      const Color.fromARGB(255, 198, 198, 198);
+    }else{
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?12:index>32&&index<48?6:3)]]["winner"]=="team2"?
+      Colors.green:
+      cricketMatch[dataList["cricket"][index~/2+(index<32?12:index>32&&index<48?6:3)]]["winner"]=="team1"?
+      Colors.red:
+      const Color.fromARGB(255, 198, 198, 198);
+    }
+  }
+  }
+
+  String teamName(int index){
+    if(index%2==0){
+      if(curGroup==0){
+      return cricketMatch[dataList["cricket"][index~/2]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index~/2]]["team1"]]:cricketMatch[dataList["cricket"][index~/2]]["team1"];
+    }else if(curGroup==1){
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?4:index>32&&index<48?2:1)]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index~/2+(index<32?4:index>32&&index<48?2:1)]]["team1"]]:cricketMatch[dataList["cricket"][index~/2+(index<32?4:index>32&&index<48?2:1)]]["team1"];
+    }else if(curGroup==2){
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?8:index>32&&index<48?4:2)]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index~/2+(index<32?8:index>32&&index<48?4:2)]]["team1"]]:cricketMatch[dataList["cricket"][index~/2+(index<32?8:index>32&&index<48?4:2)]]["team1"];
+    }else{
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?12:index>32&&index<48?6:3)]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index~/2+(index<32?12:index>32&&index<48?6:3)]]["team1"]]:cricketMatch[dataList["cricket"][index~/2+(index<32?12:index>32&&index<48?6:3)]]["team1"];
+    }
+    }else{
+       if(curGroup==0){
+      return cricketMatch[dataList["cricket"][index~/2]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index~/2]]["team2"]]:cricketMatch[dataList["cricket"][index~/2]]["team2"];
+    }else if(curGroup==1){
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?4:2)]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index~/2+(index<32?4:2)]]["team2"]]:cricketMatch[dataList["cricket"][index~/2+(index<32?4:2)]]["team2"];
+    }else if(curGroup==2){
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?8:4)]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index~/2+(index<32?8:4)]]["team2"]]:cricketMatch[dataList["cricket"][index~/2+(index<32?8:4)]]["team2"];
+    }else{
+      return cricketMatch[dataList["cricket"][index~/2+(index<32?12:6)]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index~/2+(index<32?12:6)]]["team2"]]:cricketMatch[dataList["cricket"][index~/2+(index<32?12:6)]]["team2"];
+    }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,9 +248,9 @@ class _DetailedScheduleState extends State {
               children: [
                 Column(
                   children: [
-                    Container(
+                    Container(alignment: Alignment.center,
                       // color: Colors.white,
-                      margin: const EdgeInsets.only(top: 10,bottom: 10),
+                      margin: const EdgeInsets.only(top: 10,bottom: 10,left:10),
                       height: 45,
                       width: MediaQuery.of(context).size.width,
                       child: ListView.builder(
@@ -198,8 +278,8 @@ class _DetailedScheduleState extends State {
                                     ? "Group A"
                                     : index == 1
                                         ? "Group B"
-                                        : index == 3
-                                            ? "Group D"
+                                        : index == 2
+                                            ? "Group C"
                                             : "Group D",
                                 style: const TextStyle(
                                   color: Colors.white,
@@ -255,89 +335,82 @@ class _DetailedScheduleState extends State {
                                       height: 28,
                                       width:70,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Colors.green,
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                      color:teamColor(0),
                                       ),
-                                      child:const Text("Team1"),
+                                      child:Text(teamName(0)),
                                       ),
                                       Container(
                                       margin:const EdgeInsets.only(top:30),
                                       height: 28,
                                       width:70,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Colors.red,
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(1),
                                       ),
-                                      child:const Text("Team2"),
-                                      ),
+                                      child:Text(teamName(1)),                                      ),
                                       Container(
                                       margin:const EdgeInsets.only(top:15),
                                       height: 28,
                                       width:70,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Colors.red,
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(2),
                                       ),
-                                      child:const Text("Team3"),
-                                      ),
+                                      child:Text(teamName(2)),                                      ),
                                       Container(
                                       margin:const EdgeInsets.only(top:30),
                                       height: 29,
                                       width:70,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Colors.green,
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(3),
                                       ),
-                                      child:const Text("Team4"),
-                                      ),
+                                      child:Text(teamName(3)),                                       ),
                                       Container(
                                       margin:const EdgeInsets.only(top:14),
                                       height: 29,
                                       width:70,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Colors.red,
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(4),
                                       ),
-                                      child:const Text("Team5"),
-                                      ),
+                                      child:Text(teamName(4)),                                       ),
                                       Container(
                                       margin:const EdgeInsets.only(top:30),
                                       height: 28,
                                       width:70,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Colors.green,
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(5),
                                       ),
-                                      child:const Text("Team6"),
-                                      ),
+                                      child:Text(teamName(5)),                                       ),
                                       Container(
                                       margin:const EdgeInsets.only(top:16),
                                       height: 29,
                                       width:70,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Colors.green,
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(6),
                                       ),
-                                      child:const Text("Team7"),
-                                      ),
+                                      child:Text(teamName(6)),                                       ),
                                       Container(
                                       margin:const EdgeInsets.only(top:30),
                                       height: 28,
                                       width:71,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Colors.red,
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(7),
                                       ),
-                                      child:const Text("Team8"),
-                                      ),
+                                      child:Text(teamName(7)),                                       ),
                                   ],
                                 ),
                                 const SizedBox(width:36),
@@ -350,45 +423,44 @@ class _DetailedScheduleState extends State {
                                       height: 28,
                                       width:71,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Colors.green,
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(32),
                                       ),
-                                      child:const Text("Team1",
-                                      ),
+                                      child:Text(teamName(32)), 
                                       ),
                                       Container(
                                       margin:const EdgeInsets.only(top:73),
                                       height: 29,
                                       width:72,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Colors.red,
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(33),
                                       ),
-                                      child:const Text("Team4"),
+                                      child:Text(teamName(33)), 
                                       ),
                                       Container(
                                       margin:const EdgeInsets.only(top:72),
                                       height: 28,
                                       width:72,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Color.fromARGB(255, 198, 198, 198),
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(34),
                                       ),
-                                      child:const Text("Team6"),
+                                      child:Text(teamName(34)), 
                                       ),
                                       Container(
                                       margin:const EdgeInsets.only(top:75),
                                       height: 28,
                                       width:71,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Color.fromARGB(255, 198, 198, 198),
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(35),
                                       ),
-                                      child:const Text("Team7"),
+                                      child:Text(teamName(35)), 
                                       ),
                                       ],
                                 ),
@@ -401,23 +473,21 @@ class _DetailedScheduleState extends State {
                                       height: 28,
                                       width:70,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Color.fromARGB(255, 198, 198, 198),
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(48),
                                       ),
-                                      child:const Text("Winner"),
-                                      ),
+                                     child:Text(teamName(48)),                                       ),
                                       Container(
                                       margin:const EdgeInsets.only(top:176),
                                       height: 28,
                                       width:70,
                                       alignment: Alignment.center,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color: Color.fromARGB(255, 198, 198, 198),
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:teamColor(49),
                                       ),
-                                      child:const Text("Winner"),
-                                      ),
+                                     child:Text(teamName(49)),                                       ),
                                   ],
                                 ),
                                 const SizedBox(width:37),
@@ -426,12 +496,29 @@ class _DetailedScheduleState extends State {
                                       margin:const EdgeInsets.only(top:193),
                                       height: 28,
                                       width:71,
-                                      decoration:const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                                        color:  Color.fromARGB(255, 198, 198, 198),
+                                      decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:curGroup==0?
+                                         cricketMatch[dataList["cricket"][28]]["winner"]=="team1"?Colors.green:
+                                         cricketMatch[dataList["cricket"][28]]["winner"]=="team2"?Colors.red:const Color.fromARGB(255, 198, 198, 198):
+                                         curGroup==1?
+                                         cricketMatch[dataList["cricket"][28]]["winner"]=="team2"?Colors.green:
+                                         cricketMatch[dataList["cricket"][28]]["winner"]=="team1"?Colors.red:const Color.fromARGB(255, 198, 198, 198):
+                                         curGroup==2?
+                                         cricketMatch[dataList["cricket"][29]]["winner"]=="team1"?Colors.green:
+                                         cricketMatch[dataList["cricket"][29]]["winner"]=="team2"?Colors.red:const Color.fromARGB(255, 198, 198, 198):
+                                         cricketMatch[dataList["cricket"][29]]["winner"]=="team2"?Colors.green:
+                                         cricketMatch[dataList["cricket"][29]]["winner"]=="team1"?Colors.red:const Color.fromARGB(255, 198, 198, 198),
                                       ),
                                       alignment: Alignment.center,
-                                      child:const Text("Winner7"),
+                                      child:Text(curGroup==0?
+                                        cricketMatch[dataList["cricket"][28]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][28]]["team1"]]:cricketMatch[dataList["cricket"][28]]["team1"]:
+                                        curGroup==1?
+                                        cricketMatch[dataList["cricket"][28]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][28]]["team2"]]:cricketMatch[dataList["cricket"][28]]["team2"]:
+                                        curGroup==2?
+                                        cricketMatch[dataList["cricket"][29]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][29]]["team1"]]:cricketMatch[dataList["cricket"][29]]["team1"]:
+                                        cricketMatch[dataList["cricket"][29]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][29]]["team2"]]:cricketMatch[dataList["cricket"][29]]["team2"]
+                                        ),
                                       ),
                                     
                               ],
@@ -452,7 +539,7 @@ class _DetailedScheduleState extends State {
                     height:430,
                     width: MediaQuery.of(context).size.width,
                     decoration: const BoxDecoration(
-                        color: Colors.blue,
+                        // color: Colors.blue,
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                             ),
                   
@@ -478,62 +565,86 @@ class _DetailedScheduleState extends State {
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   color:Colors.grey,
                 ),
-                      child: Image.asset("assets/schedule_diagram/team4f.png", fit: BoxFit.fill,)),
+                      child: Image.asset("assets/schedule_diagram/team4r.png", fit: BoxFit.fill,)),
             
                       Row(
                         children: [
-                          const SizedBox(width:39),
+                          const SizedBox(width:38),
                           Column(
                             children: [
                               Container(
-                                margin:const EdgeInsets.only(top:50),
-                                height: 35,
-                                width:77,
+                                margin:const EdgeInsets.only(top:48),
+                                height: 40,
+                                width:79,
                                 alignment: Alignment.center,
-                                child:const Text("Team1"),
+                                decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:cricketMatch[dataList["cricket"][28]]["winner"]=="team1"?Colors.green:
+                                         cricketMatch[dataList["cricket"][28]]["winner"]=="team2"?Colors.red:const Color.fromARGB(255, 198, 198, 198),
+                                      ),
+                                child:Text(cricketMatch[dataList["cricket"][28]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][28]]["team1"]]:cricketMatch[dataList["cricket"][28]]["team1"]),
                                 ),
                                 Container(
-                                margin:const EdgeInsets.only(top:47),
-                                height: 35,
-                                width:77,
+                                margin:const EdgeInsets.only(top:42),
+                                height: 40,
+                                width:79,
                                 alignment: Alignment.center,
-                                child:const Text("Team2"),
+                                decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:cricketMatch[dataList["cricket"][28]]["winner"]=="team2"?Colors.green:
+                                         cricketMatch[dataList["cricket"][28]]["winner"]=="team1"?Colors.red:const Color.fromARGB(255, 198, 198, 198),                                      ),
+                                child:Text(cricketMatch[dataList["cricket"][28]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][28]]["team2"]]:cricketMatch[dataList["cricket"][28]]["team2"]),
                                 ),
                                 Container(
-                                margin:const EdgeInsets.only(top:25),
-                                height: 35,
-                                width:77,
+                                margin:const EdgeInsets.only(top:20),
+                                height: 40,
+                                width:79,
                                 alignment: Alignment.center,
-                                child:const Text("Team3"),
+                                decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:cricketMatch[dataList["cricket"][29]]["winner"]=="team1"?Colors.green:
+                                         cricketMatch[dataList["cricket"][29]]["winner"]=="team2"?Colors.red:const Color.fromARGB(255, 198, 198, 198),                                      ),
+                                child:Text(cricketMatch[dataList["cricket"][29]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][29]]["team1"]]:cricketMatch[dataList["cricket"][29]]["team1"]),
                                 ),
                                 Container(
-                                margin:const EdgeInsets.only(top:47),
-                                height: 35,
-                                width:77,
+                                margin:const EdgeInsets.only(top:42),
+                                height: 40,
+                                width:79,
                                 alignment: Alignment.center,
-                                child:const Text("Team4"),
+                                decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:cricketMatch[dataList["cricket"][29]]["winner"]=="team2"?Colors.green:
+                                         cricketMatch[dataList["cricket"][29]]["winner"]=="team1"?Colors.red:const Color.fromARGB(255, 198, 198, 198),                                      ),
+                                child:Text(cricketMatch[dataList["cricket"][29]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][29]]["team2"]]:cricketMatch[dataList["cricket"][29]]["team2"]),
                                 ),                          
                             ],
                           ),
-                          const SizedBox(width:44),
+                          const SizedBox(width:42),
             
                           Column(
                             children:[
                               
                                Container(
-                                margin:const EdgeInsets.only(top:91),
-                                height: 35,
-                                width:77,
+                                margin:const EdgeInsets.only(top:88),
+                                height: 41,
+                                width:79,
                                 alignment: Alignment.center,
-                                child:const Text("Winnner1",
-                                ),
+                                decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:cricketMatch[dataList["cricket"][30]]["winner"]=="team1"?Colors.green:
+                                         cricketMatch[dataList["cricket"][30]]["winner"]=="team2"?Colors.red:const Color.fromARGB(255, 198, 198, 198),                                      ),
+                                child:Text(cricketMatch[dataList["cricket"][30]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][30]]["team1"]]:cricketMatch[dataList["cricket"][30]]["team1"]),
                                 ),
                                 Container(
-                                margin:const EdgeInsets.only(top:107),
-                                height: 35,
-                                width:77,
+                                margin:const EdgeInsets.only(top:102),
+                                height: 41,
+                                width:79,
                                 alignment: Alignment.center,
-                                child:const Text("Winner2"),
+                                decoration:BoxDecoration(
+                                        borderRadius:const BorderRadius.all(Radius.circular(4)),
+                                        color:cricketMatch[dataList["cricket"][30]]["winner"]=="team2"?Colors.green:
+                                         cricketMatch[dataList["cricket"][30]]["winner"]=="team1"?Colors.red:const Color.fromARGB(255, 198, 198, 198),                                      ),
+                                child:Text(cricketMatch[dataList["cricket"][30]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][30]]["team2"]]:cricketMatch[dataList["cricket"][30]]["team2"]),
                                 ),
                                 ],
                           ),
@@ -542,11 +653,15 @@ class _DetailedScheduleState extends State {
                       ),
                       
                           Container(
-                            margin:const EdgeInsets.only(top:173,left:281),
-                            height: 35,
-                            width:77,
-                            alignment: Alignment.center,
-                            child:const Text("Winner3"),
+                            margin:const EdgeInsets.only(top:171,left:280),
+                            height: 41,
+                                width:80,
+                                alignment: Alignment.center,
+                                decoration:const BoxDecoration(
+                                        borderRadius:BorderRadius.all(Radius.circular(4)),
+                                        // color:Colors.red,
+                                      ),
+                            child:const Text("Winner"),
                             ),
                   ],
                 ),
@@ -566,82 +681,73 @@ class _DetailedScheduleState extends State {
                   ),
                 ),
             
-                Container(        
-                  decoration:const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10),
-                    ),
-                    color: Colors.blue, 
-                  ), 
-                   margin:const EdgeInsets.symmetric(horizontal: 5,),
-                   padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-                  child:ListView.builder(
-                    shrinkWrap: true,
-                    physics:const NeverScrollableScrollPhysics(),
-                    itemCount:dataList["cricket"].length ,
-                    itemBuilder: (context ,index){
-                      return 
-                      Container(
-                        margin:const EdgeInsets.only(top: 10),
-                        padding:const EdgeInsets.only(left:10,top:5,bottom:10),
-                        width:MediaQuery.of(context).size.width,
-                        // height:80,
-                        decoration:const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10),
-                    ),
-                    color: Colors.white, 
-                  ), 
-                        child:Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                         children:[ 
-                          Text("Match : ${index+1}",
-                          style:const TextStyle(
-                            fontWeight: FontWeight.w500,
-                          ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                            Container(
-                              alignment: Alignment.bottomRight,
-                              width:100,
-                              child:Text(
-                                cricketMatch[dataList["cricket"][index]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index]]["team1"]]:cricketMatch[dataList["cricket"][index]]["team1"],
-                                style:const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                              ),
-                              ),
-                            const Text("  vs  ",
-                            style:TextStyle(
-                            fontWeight: FontWeight.w500,
-                          ),
-                            ),
-                            Container(
-                              alignment: Alignment.bottomLeft,
-                              width:100,
-                              child:Text(
-                                cricketMatch[dataList["cricket"][index]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index]]["team2"]]:cricketMatch[dataList["cricket"][index]]["team2"],
-                              style:const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                              ),
-                              ),
-                          ],),
-            
-                          const Center(
-                            child:Text("match starts at Today 8:30 AM",
-                            style:TextStyle(
-                              color: Color.fromARGB(255, 248, 137, 1),
-                            )
-                            ))
-                          ]
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics:const NeverScrollableScrollPhysics(),
+                  itemCount:dataList["cricket"].length ,
+                  itemBuilder: (context ,index){
+                    return 
+                    Container(
+                      margin:const EdgeInsets.symmetric(vertical:7.5,horizontal:5),
+                      padding:const EdgeInsets.only(left:10,top:5,bottom:10),
+                      width:MediaQuery.of(context).size.width,
+                      // height:80,
+                      decoration:const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10),
+                  ),
+                  color: Colors.white, 
+                ), 
+                      child:Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                       children:[ 
+                        Text("Match : ${index+1}",
+                        style:const TextStyle(
+                          fontWeight: FontWeight.w500,
                         ),
-                        );
-                    },
-                    )
-                ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                          Container(
+                            alignment: Alignment.bottomRight,
+                            width:100,
+                            child:Text(
+                              cricketMatch[dataList["cricket"][index]]["team1"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index]]["team1"]]:cricketMatch[dataList["cricket"][index]]["team1"],
+                              style:const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                            ),
+                            ),
+                          const Text("  vs  ",
+                          style:TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                          ),
+                          Container(
+                            alignment: Alignment.bottomLeft,
+                            width:100,
+                            child:Text(
+                              cricketMatch[dataList["cricket"][index]]["team2"].length==20?cricketTeams[cricketMatch[dataList["cricket"][index]]["team2"]]:cricketMatch[dataList["cricket"][index]]["team2"],
+                            style:const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                            ),
+                            ),
+                        ],),
+                            
+                        Center(
+                          child:Text(cricketMatch[dataList["cricket"][index]]["winner"]!="null"?"completed : team ${cricketTeams[cricketMatch[dataList["cricket"][index]][cricketMatch[dataList["cricket"][index]]["winner"]]]} won the match":cricketMatch[dataList["cricket"][index]]["time"]=="null"?"match starts at ${cricketMatch[dataList["cricket"][index]]["time"]}":"upcoming",
+                          style:const TextStyle(
+                            color: Color.fromARGB(255, 248, 137, 1),
+                          )
+                          ))
+                        ]
+                      ),
+                      );
+                  },
+                  ),
               ],
             ),
           ),

@@ -1,7 +1,10 @@
 
 import "package:flutter/material.dart";
+import "package:shared_preferences/shared_preferences.dart";
 import "./dep_ranking.dart";
 import "./match_card.dart";
+import './schedule.dart';
+import "./detailed_schedule.dart";
 class VictoryVault extends StatefulWidget{
   const VictoryVault({super.key});
   @override
@@ -59,9 +62,24 @@ class _VictoryVaultState extends State{
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children:[
                       GestureDetector(
-                        onTap: (){
-                          
+                        onTap: ()async{
+                          SharedPreferences sharedPreferences =await SharedPreferences.getInstance();
+                          String loginType=sharedPreferences.getString("myrole")??"";
+                          if(loginType=="Admin"){
+                            await initializeData();
+                                 Navigator.push(context,MaterialPageRoute(
+                                    builder: (context){
+                                    return const ScheduleApp();}));
+                    
+                          }else{
+                             await getData1();
+                             await initializeData();
+                                 Navigator.push(context,MaterialPageRoute(
+                                    builder: (context){
+                                    return const DetailedSchedule();}));
+                          }
                         },
+                         
                         child: Container(
                           height:45,
                           width:120,

@@ -11,7 +11,7 @@ import './button.dart';
  void main()async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options:const FirebaseOptions(apiKey: "AIzaSyBqC9rE-6RV1GP-LaFAAjn_nqQKKNLQ7-w", appId: "1:992087814619:android:9cb13170e4a6e9f27df7fe", messagingSenderId: "992087814619", projectId: "victoryvault-71490"));
-  // await initializeData();         //schedule
+  await initializeData();         //schedule
   runApp(const MyApp());
   // getData();
  }
@@ -21,8 +21,8 @@ import './button.dart';
   @override
   Widget build(BuildContext context){
     return const MaterialApp(
-      // home:ScheduleApp(),
-      home:Button(),
+      home:ScheduleApp(),
+      // home:Button(),
     );
   }
  }

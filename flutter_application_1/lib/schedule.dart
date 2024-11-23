@@ -1,17 +1,20 @@
+import 'dart:developer';
 
 import "package:flutter/material.dart";
 import './detailed_schedule.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-Color? backgroundColor= const Color.fromARGB(255, 36, 38, 39);
-Color? appBarColor=  const Color.fromARGB(255, 5, 57, 101);
-Color? buttonColor= Colors.white;
-Color? contentColor= Colors.white;
+int matchLimit=0;
+Map<String, dynamic> match = {};
+Color? backgroundColor = const Color.fromARGB(255, 36, 38, 39);
+Color? appBarColor = const Color.fromARGB(255, 5, 57, 101);
+Color? buttonColor = Colors.white;
+Color? contentColor = Colors.white;
 dynamic data;
 List matches = [];
-int teams = 25;
+int teams = 8;
 List groups = []; // for group data
-int groupCount = 0;
+int groupCount = 1;
 List checkTeam = []; //for checkboxes
 int curGroup = 0;
 bool selectGroup = false;
@@ -20,7 +23,7 @@ Future initializeData() async {
   var response =
       await FirebaseFirestore.instance.collection("cricket_teams").get();
   data = response.docs;
-  teams = data.length;
+  // teams = data.length;
   for (int i = 0; i < teams; i++) {
     checkTeam.add(false);
   }
@@ -49,128 +52,407 @@ class _ScheduleAppState extends State {
 
     setState(() {});
   }
- void loaderOn(){
- showDialog(
-  barrierDismissible:false,context: context, builder: (BuildContext dialogContext){
-    return PopScope(
-      canPop:false,
-      child:
-      Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 50,
-              width:50,
-              child: Image.asset("assets/loading1.gif"),
-            ),
-            const SizedBox(height: 5,),
-            const Text("wait while schedule be ready.... ",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),)
-          ],
-        ),
-      )
-    );
-  });
-  
- }
-  void newScreen(){
-  Navigator.pop(context);
-  Navigator.push(context,MaterialPageRoute(builder: (context){return const DetailedSchedule();}) );
+
+  void loaderOn() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return PopScope(
+              canPop: false,
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: Image.asset("assets/loading1.gif"),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Text(
+                      "wait while schedule be ready.... ",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    )
+                  ],
+                ),
+              ));
+        });
   }
-  void createSchedule() async{
-     loaderOn();
-    int matchLimit = 0;
-    if (teams < 33 && teams > 16) {
-      matchLimit = 4;
-    } else {
-      matchLimit = 2;
+
+  void newScreen() {
+    Navigator.pop(context);
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return const DetailedSchedule();
+    }));
+  }
+
+  void createSchedule() async {
+    loaderOn();
+
+    if (teams < 9 && teams > 4) {
+      groupCount = 1;
+      groups.add({"limit": 8, "teams": []});
+    
+    int count = 0;
+    for (int i = 0; i < groupCount; i++) {
+      for (int j = 0; j < groups[i]["limit"]; j++) {
+        groups[i]["teams"].add(data[count].id);
+        checkTeam[count] = true;
+        count++;
+      }
     }
-    Map<String,dynamic> match = {};
+    
+
+   
+      matchLimit = 4;
+
+    }
+
+log("2");
+
+    if (teams > 16) {
+//round1
     for (int i = 0; i < groupCount; i++) {
       for (int j = 0; j < matchLimit; j++) {
+        log("round1");
         if (j < (groups[i]["limit"] - 4)) {
-          match = {"team1":groups[i]["teams"][0],"team2":groups[i]["teams"][1],"round":"round1"};
+          match = {
+            "team1": groups[i]["teams"][0],
+            "team2": groups[i]["teams"][1],
+            "round": "round1"
+          };
           groups[i]["teams"].removeAt(0);
           groups[i]["teams"].removeAt(0);
-          var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"null","time":"null"});
+          var metaData = await FirebaseFirestore.instance
+              .collection("cricket_match")
+              .add(match);
+          await FirebaseFirestore.instance
+              .collection("cricket_match")
+              .doc(metaData.id)
+              .update({"id": metaData.id, "winner": "null", "time": "null"});
           matches.addAll([metaData.id]);
-          FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
+          FirebaseFirestore.instance
+              .collection("match_list")
+              .doc("1KhVXl2BRFJKdISB5TeH")
+              .update({"cricket": matches});
         } else {
-          match = {"team1":groups[i]["teams"][0],"team2":"bye","round":"round1"};
-          var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"team1","time":"null"});
+          match = {
+            "team1": groups[i]["teams"][0],
+            "team2": "bye",
+            "round": "round1"
+          };
+          var metaData = await FirebaseFirestore.instance
+              .collection("cricket_match")
+              .add(match);
+          await FirebaseFirestore.instance
+              .collection("cricket_match")
+              .doc(metaData.id)
+              .update({"id": metaData.id, "winner": "team1", "time": "null"});
           matches.addAll([metaData.id]);
-          FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
+          FirebaseFirestore.instance
+              .collection("match_list")
+              .doc("1KhVXl2BRFJKdISB5TeH")
+              .update({"cricket": matches});
           groups[i]["teams"].removeAt(0);
         }
       }
     }
-    if(teams>16){
+
+
       //round2
-      for(int i=0;i<8;i++){
-        match = {"team1":"winner ${i*2+1}","team2":"winner ${i*2+2}","round":"round2"};
-          var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"null","time":"null"});
-          matches.addAll([metaData.id]);
-          await FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team1"});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+1]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team2"});
-     }
-     //round3
-     for(int i=0;i<4;i++){
-      match = {"team1":"winner ${i*2+17}","team2":"winner ${i*2+18}","round":"round3"};
-          var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"null","time":"null"});
-          matches.addAll([metaData.id]);
-          await FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+16]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team1"});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+17]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team2"});
-     }
-     //semiFinal
-     for(int i=0;i<2;i++){
-      match = {"team1":"winner ${i*2+25}","team2":"winner ${i*2+26}","round":"semiFinal"};
-          var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"null","time":"null"});
-          matches.addAll([metaData.id]);
-          await FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+24]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team1"});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[i*2+25]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"twam2"});
-     }
-     //final
-     match = {"team1":"winner ${29}","team2":"winner ${30}","round":"Final"};
-          var metaData=await FirebaseFirestore.instance.collection("cricket_match").add(match);
-          await FirebaseFirestore.instance.collection("cricket_match").doc(metaData.id).update({"id":metaData.id,"winner":"null","time":"null"});
-          matches.addAll([metaData.id]);
-          await FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").update({"cricket":matches});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[28]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team1"});
-          await FirebaseFirestore.instance.collection("cricket_match").doc(matches[29]).update({"nextMatch":matches[matches.length-1],"nextTeamNumber":"team2"});
+      for (int i = 0; i < 8; i++) {
+        match = {
+          "team1": "winner ${i * 2 + 1}",
+          "team2": "winner ${i * 2 + 2}",
+          "round": "round2"
+        };
+        var metaData = await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .add(match);
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(metaData.id)
+            .update({"id": metaData.id, "winner": "null", "time": "null"});
+        matches.addAll([metaData.id]);
+        await FirebaseFirestore.instance
+            .collection("match_list")
+            .doc("1KhVXl2BRFJKdISB5TeH")
+            .update({"cricket": matches});
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(matches[i * 2])
+            .update({
+          "nextMatch": matches[matches.length - 1],
+          "nextTeamNumber": "team1"
+        });
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(matches[i * 2 + 1])
+            .update({
+          "nextMatch": matches[matches.length - 1],
+          "nextTeamNumber": "team2"
+        });
+      }
+      //round3
+      for (int i = 0; i < 4; i++) {
+        match = {
+          "team1": "winner ${i * 2 + 17}",
+          "team2": "winner ${i * 2 + 18}",
+          "round": "round3"
+        };
+        var metaData = await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .add(match);
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(metaData.id)
+            .update({"id": metaData.id, "winner": "null", "time": "null"});
+        matches.addAll([metaData.id]);
+        await FirebaseFirestore.instance
+            .collection("match_list")
+            .doc("1KhVXl2BRFJKdISB5TeH")
+            .update({"cricket": matches});
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(matches[i * 2 + 16])
+            .update({
+          "nextMatch": matches[matches.length - 1],
+          "nextTeamNumber": "team1"
+        });
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(matches[i * 2 + 17])
+            .update({
+          "nextMatch": matches[matches.length - 1],
+          "nextTeamNumber": "team2"
+        });
+      }
+      //semiFinal
+      for (int i = 0; i < 2; i++) {
+        match = {
+          "team1": "winner ${i * 2 + 25}",
+          "team2": "winner ${i * 2 + 26}",
+          "round": "semiFinal"
+        };
+        var metaData = await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .add(match);
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(metaData.id)
+            .update({"id": metaData.id, "winner": "null", "time": "null"});
+        matches.addAll([metaData.id]);
+        await FirebaseFirestore.instance
+            .collection("match_list")
+            .doc("1KhVXl2BRFJKdISB5TeH")
+            .update({"cricket": matches});
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(matches[i * 2 + 24])
+            .update({
+          "nextMatch": matches[matches.length - 1],
+          "nextTeamNumber": "team1"
+        });
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(matches[i * 2 + 25])
+            .update({
+          "nextMatch": matches[matches.length - 1],
+          "nextTeamNumber": "twam2"
+        });
+      }
+      //final
+      match = {
+        "team1": "winner ${29}",
+        "team2": "winner ${30}",
+        "round": "Final"
+      };
+      var metaData = await FirebaseFirestore.instance
+          .collection("cricket_match")
+          .add(match);
+      await FirebaseFirestore.instance
+          .collection("cricket_match")
+          .doc(metaData.id)
+          .update({"id": metaData.id, "winner": "null", "time": "null"});
+      matches.addAll([metaData.id]);
+      await FirebaseFirestore.instance
+          .collection("match_list")
+          .doc("1KhVXl2BRFJKdISB5TeH")
+          .update({"cricket": matches});
+      await FirebaseFirestore.instance
+          .collection("cricket_match")
+          .doc(matches[28])
+          .update({
+        "nextMatch": matches[matches.length - 1],
+        "nextTeamNumber": "team1"
+      });
+      await FirebaseFirestore.instance
+          .collection("cricket_match")
+          .doc(matches[29])
+          .update({
+        "nextMatch": matches[matches.length - 1],
+        "nextTeamNumber": "team2"
+      });
 
     }
-    var matchList=await FirebaseFirestore.instance.collection("match_list").doc("1KhVXl2BRFJKdISB5TeH").get();
+
+    if (teams > 4 && teams < 9) {
+      //round1
+
+      for (int j = 0; j < matchLimit; j++) {
+
+        if (j < (groups[0]["limit"] - 4)) {
+          match = {
+            "team1": groups[0]["teams"][0],
+            "team2": groups[0]["teams"][1],
+            "round": "round1"
+          };
+          groups[0]["teams"].removeAt(0);
+          groups[0]["teams"].removeAt(0);
+          var metaData = await FirebaseFirestore.instance
+              .collection("cricket_match")
+              .add(match);
+          await FirebaseFirestore.instance
+              .collection("cricket_match")
+              .doc(metaData.id)
+              .update({"id": metaData.id, "winner": "null", "time": "null"});
+          matches.addAll([metaData.id]);
+          FirebaseFirestore.instance
+              .collection("match_list")
+              .doc("1KhVXl2BRFJKdISB5TeH")
+              .update({"cricket": matches});
+        } else {
+          match = {
+            "team1": groups[0]["teams"][0],
+            "team2": "bye",
+            "round": "round1"
+          };
+          var metaData = await FirebaseFirestore.instance
+              .collection("cricket_match")
+              .add(match);
+          await FirebaseFirestore.instance
+              .collection("cricket_match")
+              .doc(metaData.id)
+              .update({"id": metaData.id, "winner": "team1", "time": "null"});
+          matches.addAll([metaData.id]);
+          FirebaseFirestore.instance
+              .collection("match_list")
+              .doc("1KhVXl2BRFJKdISB5TeH")
+              .update({"cricket": matches});
+          groups[0]["teams"].removeAt(0);
+        }
+      }
+    
+      //semifinal
+      log("semi");
+      for (int i = 0; i < 2; i++) {
+        match = {
+          "team1": "winner ${i * 2 + 1}",
+          "team2": "winner ${i * 2 + 2}",
+          "round": "semiFinal"
+        };
+        var metaData = await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .add(match);
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(metaData.id)
+            .update({"id": metaData.id, "winner": "null", "time": "null"});
+        matches.addAll([metaData.id]);
+        await FirebaseFirestore.instance
+            .collection("match_list")
+            .doc("1KhVXl2BRFJKdISB5TeH")
+            .update({"cricket": matches});
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(matches[i * 2])
+            .update({
+          "nextMatch": matches[matches.length - 1],
+          "nextTeamNumber": "team1"
+        });
+
+        await FirebaseFirestore.instance
+            .collection("cricket_match")
+            .doc(matches[i * 2 + 1])
+            .update({
+          "nextMatch": matches[matches.length - 1],
+          "nextTeamNumber": "twam2"
+        });
+      }
+
+
+      //final
+      log("final");
+      match = {
+        "team1": "winner ${5}",
+        "team2": "winner ${6}",
+        "round": "Final"
+      };
+      var metaData = await FirebaseFirestore.instance
+          .collection("cricket_match")
+          .add(match);
+
+      await FirebaseFirestore.instance
+          .collection("cricket_match")
+          .doc(metaData.id)
+          .update({"id": metaData.id, "winner": "null", "time": "null"});
+      matches.addAll([metaData.id]);
+      await FirebaseFirestore.instance
+          .collection("match_list")
+          .doc("1KhVXl2BRFJKdISB5TeH")
+          .update({"cricket": matches});
+      await FirebaseFirestore.instance
+          .collection("cricket_match")
+          .doc(matches[4])
+          .update({
+        "nextMatch": matches[matches.length - 1],
+        "nextTeamNumber": "team1"
+      });
+      await FirebaseFirestore.instance
+          .collection("cricket_match")
+          .doc(matches[5])
+          .update({
+        "nextMatch": matches[matches.length - 1],
+        "nextTeamNumber": "team2"
+      });
+    }
+
+    var matchList = await FirebaseFirestore.instance
+        .collection("match_list")
+        .doc("1KhVXl2BRFJKdISB5TeH")
+        .get();
     for (int i = 0; i < groupCount; i++) {
       for (int j = 0; j < matchLimit; j++) {
         if (j >= (groups[i]["limit"] - 4)) {
-          var response=await FirebaseFirestore.instance.collection("cricket_match").doc(matchList["cricket"][i*matchLimit+j]).get();
-          await FirebaseFirestore.instance.collection("cricket_match").doc(response["nextMatch"]).update({response["nextTeamNumber"]:response[response["winner"]]});
+          var response = await FirebaseFirestore.instance
+              .collection("cricket_match")
+              .doc(matchList["cricket"][i * matchLimit + j])
+              .get();
+          await FirebaseFirestore.instance
+              .collection("cricket_match")
+              .doc(response["nextMatch"])
+              .update(
+                  {response["nextTeamNumber"]: response[response["winner"]]});
         }
       }
     }
-  await getData1();
-  newScreen();
-  
+    log("data gone");
+    await getData1();
 
+    newScreen();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:backgroundColor,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         leading: Builder(builder: (context) {
           return GestureDetector(
@@ -200,17 +482,18 @@ class _ScheduleAppState extends State {
           style: TextStyle(
               color: Colors.white, fontSize: 30, fontWeight: FontWeight.w900),
         ),
-        backgroundColor:appBarColor,
+        backgroundColor: appBarColor,
       ),
       body: ListView(
         children: [
           Container(
-            margin:const EdgeInsets.only(bottom: 10),
+            margin: const EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
               color: appBarColor,
-              borderRadius:const BorderRadius.only(bottomLeft:Radius.circular(10),bottomRight:Radius.circular(10)),
+              borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10)),
             ),
-            
             child: Column(
               children: [
                 Row(
@@ -230,74 +513,76 @@ class _ScheduleAppState extends State {
                   ],
                 ),
                 Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                  height: 45,
-                  width: 130,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    color: Colors.white,
-                  ),
+                  padding: const EdgeInsets.only(bottom: 20),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          height: 20,
-                          width: 20,
-                          child: Image.asset("assets/battle.png")),
-                      const Text("Matches"),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 45,
-                  width: 130,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    color: Colors.blue,
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Image.asset("assets/schedule.png",
-                            color: Colors.black),
+                        height: 45,
+                        width: 130,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: Colors.white,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                height: 20,
+                                width: 20,
+                                child: Image.asset("assets/battle.png")),
+                            const Text("Matches"),
+                          ],
+                        ),
                       ),
-                      const Text("Shedule"),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 45,
-                  width: 130,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    color: Colors.white,
-                  ),
-                  child: Row(
-                    children: [
                       Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          height: 20,
-                          width: 20,
-                          child: const Icon(Icons.leaderboard)
-                          // child: Image.asset("assets/sports.png"),
-                          ),
-                      const Text("Leaderboard"),
+                        height: 45,
+                        width: 130,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: Colors.blue,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Image.asset("assets/schedule.png",
+                                  color: Colors.black),
+                            ),
+                            const Text("Shedule"),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 45,
+                        width: 130,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: Colors.white,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                height: 20,
+                                width: 20,
+                                child: const Icon(Icons.leaderboard)
+                                // child: Image.asset("assets/sports.png"),
+                                ),
+                            const Text("Leaderboard"),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-              ],
-            ),
-          ),
-          
-          !selectGroup
+          !selectGroup && (teams > 8)
               ? Container(
                   alignment: Alignment.center,
                   decoration: const BoxDecoration(
@@ -324,7 +609,7 @@ class _ScheduleAppState extends State {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               selectGroup = true;
                               if (teams < 33 && teams > 8) {
                                 groupCount = 4;
@@ -339,33 +624,31 @@ class _ScheduleAppState extends State {
                                   }
                                 }
                               } else if (teams < 9 && teams > 4) {
-                                groupCount = 2;
+                                groupCount = 1;
                                 int rem = teams % 2;
                                 for (int i = 0; i < groupCount; i++) {
                                   if (rem > i) {
-                                    groups.add(
-                                        {"limit": teams ~/ 2 + 1, "teams": []});
+                                    groups.add({"limit": 4, "teams": []});
                                   } else {
-                                    groups.add(
-                                        {"limit": teams ~/ 2, "teams": []});
+                                    groups.add({"limit": 2, "teams": []});
                                   }
                                 }
                               }
-                            int count=0;
-                            for(int i=0;i<groupCount;i++){
-                              for(int j=0;j<groups[i]["limit"];j++){
-                                groups[i]["teams"].add(data[count].id);
-                                checkTeam[count] = true;
-                                count++;
+                              int count = 0;
+                              for (int i = 0; i < groupCount; i++) {
+                                for (int j = 0; j < groups[i]["limit"]; j++) {
+                                  groups[i]["teams"].add(data[count].id);
+                                  checkTeam[count] = true;
+                                  count++;
+                                }
                               }
-                            }
-                            setState(() {});
-
+                              setState(() {});
                             },
                             child: Container(
                               margin: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 5),
-                             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 10),
                               decoration: const BoxDecoration(
                                   color: Colors.white,
                                   borderRadius:
@@ -414,7 +697,8 @@ class _ScheduleAppState extends State {
                             child: Container(
                               margin: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 5),
-                              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 10),
                               decoration: const BoxDecoration(
                                   color: Colors.white,
                                   borderRadius:
@@ -436,11 +720,11 @@ class _ScheduleAppState extends State {
                 )
               : Container(
                   alignment: Alignment.center,
-                  decoration:BoxDecoration(
-                    borderRadius:const BorderRadius.all(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(
                       Radius.circular(10),
                     ),
-                    color:backgroundColor,
+                    color: backgroundColor,
                   ),
                   margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
                   padding:
@@ -463,7 +747,8 @@ class _ScheduleAppState extends State {
                         child: Container(
                           margin: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
-                          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 10),
                           decoration: const BoxDecoration(
                               color: Colors.white,
                               borderRadius:
@@ -504,7 +789,7 @@ class _ScheduleAppState extends State {
                     ? Container(
                         // color: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 5),
-                        margin: const EdgeInsets.only(top: 5,bottom: 20),
+                        margin: const EdgeInsets.only(top: 5, bottom: 20),
                         height: 45,
                         width: MediaQuery.of(context).size.width,
                         child: ListView.builder(
@@ -525,7 +810,8 @@ class _ScheduleAppState extends State {
                                 decoration: BoxDecoration(
                                   color: index == curGroup ? Colors.blue : null,
                                   borderRadius: const BorderRadius.all(
-                                      Radius.circular(10),),
+                                    Radius.circular(10),
+                                  ),
                                 ),
                                 child: Column(
                                   children: [
@@ -603,20 +889,20 @@ class _ScheduleAppState extends State {
                             selectTeams(index);
                           },
                           child: Container(
-                            margin: const EdgeInsets.only(bottom:10,left:5,right:5),
+                            margin: const EdgeInsets.only(
+                                bottom: 10, left: 5, right: 5),
                             padding: const EdgeInsets.only(
                                 left: 15, top: 15, bottom: 15),
                             width: MediaQuery.of(context).size.width,
                             // height:80,
-                            decoration:BoxDecoration(
-                              borderRadius:const BorderRadius.all(
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(
                                 Radius.circular(10),
                               ),
                               color: contentColor,
                             ),
                             child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     children: [
@@ -627,12 +913,15 @@ class _ScheduleAppState extends State {
                                               height: 24,
                                               width: 24,
                                               child: Checkbox(
-                                                  activeColor: !groups[curGroup]["teams"].contains(data[index].id)? const Color.fromARGB(255,
-                220, 218, 218)
+                                                  activeColor: !groups[curGroup]
+                                                              ["teams"]
+                                                          .contains(
+                                                              data[index].id)
+                                                      ? const Color.fromARGB(
+                                                          255, 220, 218, 218)
                                                       : null,
                                                   value: checkTeam[index],
-                                                  onChanged:
-                                                      (bool? newValue) {
+                                                  onChanged: (bool? newValue) {
                                                     selectTeams(index);
                                                   }),
                                             )
@@ -643,13 +932,13 @@ class _ScheduleAppState extends State {
                                         child: Text(
                                           "${index + 1}",
                                           style: TextStyle(
-                                            fontWeight:
-                                                checkTeam[index] == false ||
-                                                        groups[curGroup]
-                                                                ["teams"]
-                                                            .contains(data[index].id)
-                                                    ? FontWeight.w500
-                                                    : FontWeight.w300,
+                                            fontWeight: checkTeam[index] ==
+                                                        false ||
+                                                    groups[curGroup]["teams"]
+                                                        .contains(
+                                                            data[index].id)
+                                                ? FontWeight.w500
+                                                : FontWeight.w300,
                                             fontSize: 16,
                                           ),
                                         ),
@@ -661,13 +950,13 @@ class _ScheduleAppState extends State {
                                         child: Text(
                                           data[index]["name"],
                                           style: TextStyle(
-                                            fontWeight:
-                                                checkTeam[index] == false ||
-                                                        groups[curGroup]
-                                                                ["teams"]
-                                                            .contains(data[index].id)
-                                                    ? FontWeight.w500
-                                                    : FontWeight.w300,
+                                            fontWeight: checkTeam[index] ==
+                                                        false ||
+                                                    groups[curGroup]["teams"]
+                                                        .contains(
+                                                            data[index].id)
+                                                ? FontWeight.w500
+                                                : FontWeight.w300,
                                             fontSize: 16,
                                           ),
                                         ),
@@ -680,13 +969,13 @@ class _ScheduleAppState extends State {
                                           data[index]["dept"],
                                           // "${data[0]["dept"]}",
                                           style: TextStyle(
-                                            fontWeight:
-                                                checkTeam[index] == false ||
-                                                        groups[curGroup]
-                                                                ["teams"]
-                                                            .contains(data[index].id)
-                                                    ? FontWeight.w500
-                                                    : FontWeight.w300,
+                                            fontWeight: checkTeam[index] ==
+                                                        false ||
+                                                    groups[curGroup]["teams"]
+                                                        .contains(
+                                                            data[index].id)
+                                                ? FontWeight.w500
+                                                : FontWeight.w300,
                                             fontSize: 16,
                                           ),
                                         ),

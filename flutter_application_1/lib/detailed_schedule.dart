@@ -291,8 +291,11 @@ class _DetailedScheduleState extends State {
                         },
                       ),
                     ),
+
+
+                    //condition to be change  to  dataTeams.length <9 
                 
-                  Container(
+                  true ?const Text (""): Container(
                   alignment: Alignment.center,
                   height:400,
                   width: 400,
@@ -314,7 +317,7 @@ class _DetailedScheduleState extends State {
                                     
                                       child:Stack(
                                         children: [
-                          Container(
+                             Container(
                             height:400,
                                       width:400,
                                       clipBehavior: Clip.antiAlias,
@@ -533,8 +536,10 @@ class _DetailedScheduleState extends State {
                 ),
             
                 const SizedBox(height: 10,),
+
+                   //condition to be change  to  dataTeams.length <9 
             
-                Container(
+                 true? const Text(""): Container(
                     alignment: Alignment.center,
                     height:430,
                     width: MediaQuery.of(context).size.width,

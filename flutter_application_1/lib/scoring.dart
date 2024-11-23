@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import "package:flutter/material.dart";
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,10 +29,19 @@ Map playerName={};
   Map inning={};
   Map batsmans={};
   Map bowlers={};
+  dynamic response;
+ 
+void changeStrike(){
+  if(strike==1){
+    strike=2;
+  }else{
+    strike=1;
+  }
+}
 
 Future getData()async{
   // var response=await FirebaseFirestore.instance.collection("cricket_match").doc("matchID").get();
-  var response = await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).get();
+  response = await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).get();
   var response1=await FirebaseFirestore.instance.collection("Student").get();
   var res=response1.docs;
   playing1=response["playing1"];
@@ -43,8 +51,6 @@ Future getData()async{
   for(int i=0;i<res.length;i++){
     playerName[res[i]["id"]]=res[i]["name"];
   }
-
-  print(playerName);
   
  
   }
@@ -97,12 +103,14 @@ Widget showBowler(){
                 itemBuilder: (context,index){
                   return GestureDetector(
                     onTap: (){
-                      if(wFielder!=index){
+                      if(bowler1!=playing2[index]){
+                        if(wFielder!=index){
                         wFielder=index;
                       }else{
                         wFielder=0;
                       }
                      setState((){});
+                      }
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -116,7 +124,8 @@ Widget showBowler(){
                         border:Border.all(color: Colors.black),
                       ),
                       
-                      child:Text(playerName[playing2[index]]),
+                      child:Text(playerName[playing2[index]],
+                      style: TextStyle(color:bowler1!=playing2[index]?Colors.black:Colors.grey),),
                     ),
                   );
                 }),
@@ -128,18 +137,26 @@ Widget showBowler(){
                   backgroundColor: WidgetStatePropertyAll(Colors.blue),
                 ),
                 onPressed: () async{
-                  Navigator.pop(context);
-                    bowler1=playing2[wFielder];
-                    clearFlags();     
-                    log("bowler");
+                  Navigator.pop(context);     
                     // await FirebaseFirestore.instance.collection("Student").doc("player1@gmail.com").update({"name":"start"});  
-                    if(!bowlers[bowler1].isNotEmpty()){
+                    
+                    if(bowler1==""){
+                      log("condition1");
+                      bowler1=playing2[wFielder];
+                      bowlers[bowler1]={"ball":0,"wicket":0,"run":0};
+                     inning["bowler"]=bowlers;
+                     await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"inning1":inning}); 
+                    }else if(!bowlers.containsKey(playing2[wFielder])){
+                      log("condition2");
+                      bowler1=playing2[wFielder];
                       bowlers[bowler1]={"ball":0,"wicket":0,"run":0};
                      inning["bowler"]=bowlers;
                      await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"inning1":inning});    
+                    }else{
+                      log("condition3");
+                      bowler1=playing2[wFielder];
                     }
-                     
-                      log("here");
+                     clearFlags();
                 },
                 child: const Text("Submit"),
               ),
@@ -164,7 +181,7 @@ return showBatsman(num+2);});
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              num==1?"Batsman1":"Batsman2",
+              num==1?"Batsman1":num==2?"Batsman2":"New Batsman",
               style:const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -178,12 +195,15 @@ return showBatsman(num+2);});
                 itemBuilder: (context,index){
                   return GestureDetector(
                     onTap: (){
-                      if(wFielder!=index){
+                      if(!batsmans.containsKey(playing1[index])){
+                        if(wFielder!=index){
                         wFielder=index;
                       }else{
                         wFielder=0;
                       }
                      setState((){});
+                      }
+                      
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -197,7 +217,8 @@ return showBatsman(num+2);});
                         border:Border.all(color: Colors.black),
                       ),
                       
-                      child:Text(playerName[playing1[index]]),
+                      child:Text(playerName[playing1[index]],
+                      style:TextStyle(color:batsmans.containsKey(playing1[index])?Colors.grey:Colors.black),),
                     ),
                   );
                 }),
@@ -212,7 +233,7 @@ return showBatsman(num+2);});
                   Navigator.pop(context);
                   if(num==1){
                     batsman1=playing1[wFielder];
-                    batsmans[batsman1]={"run":0,"ball":0,"out":false};
+                    batsmans[batsman1]={"run":0,"ball":0,"out":false,"six":0,"four":0};
                     inning["batsman"]=batsmans;
                     showDialog(context: context,
                     builder: (context) {
@@ -223,7 +244,7 @@ return showBatsman(num+2);});
                    
                   }else if(num==2){
                     batsman2=playing1[wFielder];
-                    batsmans[batsman2]={"run":0,"ball":0,"out":false};
+                    batsmans[batsman2]={"run":0,"ball":0,"out":false,"six":0,"four":0};
                     inning["batsman"]=batsmans;
                     clearFlags();
                     showDialog(context: context,
@@ -234,13 +255,13 @@ return showBatsman(num+2);});
                   }
                   else if(num==3){
                     batsman1=playing1[wFielder];
-                    batsmans[batsman1]={"run":0,"ball":0,"out":false};
+                    batsmans[batsman1]={"run":0,"ball":0,"out":false,"six":0,"four":0};
                     inning["batsman"]=batsmans;
                      clearFlags();
                     await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"inning1":inning}); 
                   }else{
                     batsman2=playing1[wFielder];
-                    batsmans[batsman2]={"run":0,"ball":0,"out":false};
+                    batsmans[batsman2]={"run":0,"ball":0,"out":false,"six":0,"four":0};
                     inning["batsman"]=batsmans;
                     clearFlags();
                     await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"inning1":inning}); 
@@ -325,6 +346,7 @@ return showBatsman(num+2);});
                   inning["ball"]=ball;
                   inning["wicket"]=wicket;
 
+
                 if(checkWide||checkNoBall){
                   bowlers[bowler1]={"run":bowlers[bowler1]["run"]+selectedRun+1,"ball":bowlers[bowler1]["ball"],"wicket":bowlers[bowler1]["wicket"]};
                 }else{
@@ -337,18 +359,18 @@ return showBatsman(num+2);});
                 }
 
                   if(checkByes||checkLegByes){
-                  batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1};
-                  batsmans[wBatsman==1?batsman1:batsman2]={"run":batsmans[wBatsman==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":true,"wType":wType,"wBowler":bowler1,"wFielder":playing2[wFielder]};
-
+                  batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                   }else{
-                  batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"]+selectedRun,"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1};
-                  batsmans[wBatsman==1?batsman1:batsman2]={"run":batsmans[wBatsman==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":true,"wType":wType,"wBowler":bowler1,"wFielder":playing2[wFielder]};
+                  batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"]+selectedRun,"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"six":batsmans[strike==1?batsman1:batsman2]["six"]+(selectedRun==6?1:0),"four":batsmans[strike==1?batsman1:batsman2]["four"]+(selectedRun==4?1:0)};
                   }
+                  batsmans[wBatsman==1?batsman1:batsman2]={"run":batsmans[wBatsman==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":true,"wType":wType,"wBowler":bowler1,"wFielder":playing2[wFielder],"six":batsmans[wBatsman==1?batsman1:batsman2]["six"],"four":batsmans[wBatsman==1?batsman1:batsman2]["four"]};
 
                   await doc.update( {"inning1":inning});
-                  if(ball%6==0 && !checkWide && !checkNoBall){
+                  if(ball>=response["totalOvers"]||wicket>=10){
+                    await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":"inning1"}); 
+                  }else if(ball%6==0 && !checkWide && !checkNoBall){
                     showBowler1();
-                  }
+                    }
                    showBatsman1(wBatsman);
                   
                   clearFlags();
@@ -454,7 +476,9 @@ return showBatsman(num+2);});
                   inning["ballNumber"]=data;
                   inning["ball"]=ball;
                   inning["wicket"]=wicket;
-                  if(ball%6==0 && !checkWide && !checkNoBall){
+                  if(ball>=response["totalOvers"]*6){
+                    await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":"inning1"}); 
+                  }else if(ball%6==0 && !checkWide && !checkNoBall){
                     showBowler1();
                   }
                   if(checkWide || checkNoBall){
@@ -473,17 +497,20 @@ return showBatsman(num+2);});
                   }
 
                   if(checkByes||checkLegByes){
-                  batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1};
-                  batsmans[wBatsman==1?batsman1:batsman2]={"run":batsmans[wBatsman==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":true,"wType":wType,"wBowler":bowler1};
-
+                  batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                   }else{
-                  batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"]+selectedRun,"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1};
-                  batsmans[wBatsman==1?batsman1:batsman2]={"run":batsmans[wBatsman==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":true,"wType":wType,"wBowler":bowler1};
+                  batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"]+selectedRun,"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"six":batsmans[strike==1?batsman1:batsman2]["six"]+(selectedRun==6?1:0),"four":batsmans[strike==1?batsman1:batsman2]["four"]+(selectedRun==4?1:0)};
                   }
-                  await doc.update( {"inning1":inning});
+                  batsmans[wBatsman==1?batsman1:batsman2]={"run":batsmans[wBatsman==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":true,"wType":wType,"wBowler":bowler1,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
 
-              
+                  await doc.update( {"inning1":inning});
+                  if(wicket>=10){
+                    await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":"inning1"}); 
+                  }
                   showBatsman1(wBatsman);
+                  if(selectedRun%2==1){
+                    changeStrike();
+                  }
                   clearFlags();
                   }
                 },
@@ -866,11 +893,11 @@ return showBatsman(num+2);});
                     const SizedBox(
                       width: 15,
                     ),
-                    const SizedBox(width: 20, height: 20, child: Text("0")),
+                    SizedBox(width: 20, height: 20, child: Text(batsman1!="" ? "${inning["batsman"][batsman1]["four"]}":"0")),
                     const SizedBox(
                       width: 15,
                     ),
-                    const SizedBox(width: 20, height: 20, child: Text("0")),
+                    SizedBox(width: 20, height: 20, child: Text(batsman1!="" ? "${inning["batsman"][batsman1]["six"]}":"0")),
                     const SizedBox(
                       width: 15,
                     ),
@@ -910,11 +937,11 @@ return showBatsman(num+2);});
                     const SizedBox(
                       width: 15,
                     ),
-                    const SizedBox(width: 20, height: 20, child: Text("0")),
+                    SizedBox(width: 20, height: 20, child: Text(batsman2!="" ? "${inning["batsman"][batsman2]["six"]}":"0")),
                     const SizedBox(
                       width: 15,
                     ),
-                    const SizedBox(width: 20, height: 20, child: Text("0")),
+                    SizedBox(width: 20, height: 20, child: Text(batsman2!="" ? "${inning["batsman"][batsman2]["four"]}":"0")),
                     const SizedBox(
                       width: 15,
                     ),
@@ -982,7 +1009,7 @@ return showBatsman(num+2);});
                       ),
                     ),
                     const Spacer(),
-                    SizedBox(width: 30, height: 20, child:Text("${inning["bowler"][bowler1]["ball"]~/6}.${inning["bowler"][bowler1]["ball"]%6}") 
+                    SizedBox(width: 30, height: 20, child:Text(bowler1!=""?inning["bowler"][bowler1]!=""?"${inning["bowler"][bowler1]["ball"]~/6}.${inning["bowler"][bowler1]["ball"]%6}":"0":"0") 
                     ),
                     const SizedBox(
                       width: 15,
@@ -1416,14 +1443,14 @@ return showBatsman(num+2);});
                      inning["ballNumber"]=data;
                      inning["ball"]=ball;
                       bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run+1,"ball":bowlers[bowler1]["ball"],"wicket":bowlers[bowler1]["wicket"]};
-                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":false};
+                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     await doc.update( {"inning1":inning});
                   }else{
                      data.addAll({"$ballNumber":{"wide/no":"wide","byes/leg":"NA","run":run,}});
                      inning["ballNumber"]=data;
                      inning["ball"]=ball;
                      bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run+1,"ball":bowlers[bowler1]["ball"],"wicket":bowlers[bowler1]["wicket"]};
-                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":false};
+                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     await doc.update( {"inning1":inning});
                   }
                   }
@@ -1434,7 +1461,7 @@ return showBatsman(num+2);});
                    inning["ballNumber"]=data;
                      inning["ball"]=ball;
                       bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run+1,"ball":bowlers[bowler1]["ball"],"wicket":bowlers[bowler1]["wicket"]};
-                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false};
+                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     await doc.update( {"inning1":inning});
                   }
                   else if(checkLegByes){
@@ -1443,7 +1470,7 @@ return showBatsman(num+2);});
                    inning["ballNumber"]=data;
                      inning["ball"]=ball;
                       bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run+1,"ball":bowlers[bowler1]["ball"],"wicket":bowlers[bowler1]["wicket"]};
-                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false};
+                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     await doc.update( {"inning1":inning});
                 }
                 else{
@@ -1451,7 +1478,7 @@ return showBatsman(num+2);});
                    inning["ballNumber"]=data;
                     inning["ball"]=ball;
                     bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run+1,"ball":bowlers[bowler1]["ball"],"wicket":bowlers[bowler1]["wicket"]};
-                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"]+run,"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false};
+                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"]+run,"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"]+(run==6?1:0),"four":batsmans[strike==1?batsman1:batsman2]["four"]+(run==4?1:0)};
                     await doc.update( {"inning1":inning});
                 }
                   }
@@ -1463,7 +1490,7 @@ return showBatsman(num+2);});
                     inning["ballNumber"]=data;
                      inning["ball"]=ball;
                     bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run,"ball":bowlers[bowler1]["ball"]+1,"wicket":bowlers[bowler1]["wicket"]};
-                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"]+run,"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false};
+                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     
                     await doc.update( {"inning1":inning});
                   }else if(checkByes){
@@ -1471,29 +1498,35 @@ return showBatsman(num+2);});
                     inning["ballNumber"]=data;
                      inning["ball"]=ball;
                     bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run,"ball":bowlers[bowler1]["ball"]+1,"wicket":bowlers[bowler1]["wicket"]};
-                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false};
+                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     await doc.update( {"inning1":inning});
                   }else{
                      data.addAll({"$ballNumber":{"wide/no":"NA","byes/leg":"NA","run":run,}});
                      inning["ballNumber"]=data;
                      inning["ball"]=ball;
                     bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run,"ball":bowlers[bowler1]["ball"]+1,"wicket":bowlers[bowler1]["wicket"]};
-                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"]+run,"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false};
-                    clearFlags();
+                    batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"]+run,"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"]+(run==6?1:0),"four":batsmans[strike==1?batsman1:batsman2]["four"]+(run==4?1:0)};
                     await doc.update({"inning1":inning}); 
                   }
                     
                   }
-                  if(ball%6==0 && !checkWide && !checkNoBall){
+                  if(ball>=response["totalOvers"]*6){
+                    await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":"inning1"}); 
+                    Navigator.pop(context);
+                  }else if(ball%6==0 && !checkWide && !checkNoBall){
                     showBowler1();
-                  }
                 }
+                }
+                if(selectedRun%2==1){
+                  changeStrike();
                 }
                 if(!checkWicket){
                   clearFlags();
                 }
                 }
-                // FirebaseFirestore.instance.collection("cricket_match").add({"name":"sanket"});
+                
+              
+                }
               },
               style: const ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll(Colors.blue)),

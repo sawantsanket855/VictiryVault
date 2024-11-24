@@ -135,10 +135,14 @@ log("2");
       for (int j = 0; j < matchLimit; j++) {
         log("round1");
         if (j < (groups[i]["limit"] - 4)) {
+          var playing1=await FirebaseFirestore.instance.collection("cricket_teams").doc(groups[i]["teams"][0]).get();
+          var playing2=await FirebaseFirestore.instance.collection("cricket_teams").doc(groups[i]["teams"][1]).get();
           match = {
             "team1": groups[i]["teams"][0],
             "team2": groups[i]["teams"][1],
-            "round": "round1"
+            "round": "round1",
+            "playing1":playing1,
+            "playing2":playing2,
           };
           groups[i]["teams"].removeAt(0);
           groups[i]["teams"].removeAt(0);
@@ -319,12 +323,16 @@ log("2");
       //round1
 
       for (int j = 0; j < matchLimit; j++) {
-
+        var playing1=await FirebaseFirestore.instance.collection("cricket_teams").doc(groups[0]["teams"][0]).get();
+        print(playing1["players"]);
+        var playing2=await FirebaseFirestore.instance.collection("cricket_teams").doc(groups[0]["teams"][1]).get();
         if (j < (groups[0]["limit"] - 4)) {
           match = {
             "team1": groups[0]["teams"][0],
             "team2": groups[0]["teams"][1],
-            "round": "round1"
+            "round": "round1",
+            "playing1":playing1["players"],
+            "playing2":playing2["players"]
           };
           groups[0]["teams"].removeAt(0);
           groups[0]["teams"].removeAt(0);
@@ -768,7 +776,7 @@ log("2");
                           child: Text(
                             "Confirm",
                             style: TextStyle(
-                              color: checkTeam.contains(false)
+                              color: checkTeam.contains(false) || (teams>32 && teams<5)
                                   ? Colors.grey
                                   : Colors.black,
                               fontSize: 15,

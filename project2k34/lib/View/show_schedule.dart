@@ -248,7 +248,7 @@ class _DetailedScheduleState extends State {
               children: [
                 Column(
                   children: [
-                    Container(alignment: Alignment.center,
+                     dataTeams.length <9 ? const Text("") : Container(alignment: Alignment.center,
                       // color: Colors.white,
                       margin: const EdgeInsets.only(top: 10,bottom: 10,left:10),
                       height: 45,
@@ -295,7 +295,7 @@ class _DetailedScheduleState extends State {
 
                     //condition to be change  to  dataTeams.length <9 
                 
-                  true ?const Text (""): Container(
+                  dataTeams.length <9 ?const Text (""): Container(
                   alignment: Alignment.center,
                   height:400,
                   width: 400,
@@ -539,7 +539,7 @@ class _DetailedScheduleState extends State {
 
                    //condition to be change  to  dataTeams.length <9 
             
-                 true? const Text(""): Container(
+                 dataTeams.length <9? const Text(""): Container(
                     alignment: Alignment.center,
                     height:430,
                     width: MediaQuery.of(context).size.width,
@@ -675,9 +675,9 @@ class _DetailedScheduleState extends State {
                         ),
                 ),
             
-                const Padding(
-                  padding:EdgeInsets.only(top:40,left:20,bottom:5),
-                  child:Text("Matches",
+                Padding(
+                  padding:dataTeams.length <9? const EdgeInsets.only(left:20,bottom:5):const EdgeInsets.only(top:40,left:20,bottom:5),
+                  child:const Text("Matches",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,

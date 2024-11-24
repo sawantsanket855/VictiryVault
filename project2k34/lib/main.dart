@@ -9,7 +9,8 @@ import 'package:project2k34/View/HomePages/adminHomePage.dart';
 import 'package:project2k34/View/admin_home_page.dart';
 import 'package:project2k34/View/dummyData/studentDummyData.dart';
 import 'package:project2k34/View/register_Screen.dart';
-import 'package:project2k34/View/scoring_cricket.dart';
+import 'package:project2k34/View/scoring.dart';
+// import 'package:project2k34/View/scoring_cricket.dart';
 import 'package:project2k34/View/splash_Screen01.dart';
 import 'package:project2k34/View/splash_screen.dart';
 import 'package:project2k34/View/splash_screen03.dart';
@@ -17,12 +18,15 @@ import 'package:project2k34/View/HomePages/studentHomePage.dart';
 import 'package:project2k34/View/uplode_demo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:project2k34/View/create_schedule.dart';
+import 'package:project2k34/View/scorecardNew.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await MySharedPrefrence.getData();
   await Firsttimecheck.getData();
-  await initializeData();
+  // await initializeData();
+  // await getData();
+  await getScoreCardData();
   //  await initializeData();
   //  StudentDummyData().cricketpointTable();
   //  StudentDummyData().FootballPointTable();
@@ -39,7 +43,7 @@ class MainApp extends StatelessWidget {
   const MainApp({super.key});
   Widget nextScreen(){
     if(MySharedPrefrence.isLogin){
-      return ScheduleApp();
+      return const ScoreCard();
       // return SplashScreen03();
 
 

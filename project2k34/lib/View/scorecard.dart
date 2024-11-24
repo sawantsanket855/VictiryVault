@@ -52,8 +52,8 @@ class ScoreCard extends StatelessWidget {
                             color: const Color.fromARGB(212, 50, 151, 16),
                           ),
                           padding: const EdgeInsets.all(8),
-                          child: Column(
-                            children: const [
+                          child:const Column(
+                            children: [
                               Text(
                                 "Team B",
                                 style: TextStyle(

@@ -3,7 +3,8 @@ import "package:flutter/material.dart";
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import './data.dart';
-String matchID="6HpA76ZNgBD4Yqv1PrTD";
+String matchID="deH7rutoGav7h7tUfZhb";
+String curInning="inning1";
 Map data={};
 Map playerName={};
  String batsman1="";
@@ -29,9 +30,7 @@ Map playerName={};
   Map batsmans={};
   Map bowlers={};
   dynamic response;
-  String curInning="inning2";
   int prevScore=99999;
- 
 void changeStrike(){
   if(strike==1){
     strike=2;
@@ -68,7 +67,7 @@ Future getData()async{
   // print(playing1);
   // print(playing2);
   for(int i=0;i<res.length;i++){
-    playerName[res[i]["id"]]=res[i]["name"];
+    playerName[res[i]["email"]]=res[i]["name"];
   }
   inning["ball"]=ball;
   inning["wicket"]=wicket;

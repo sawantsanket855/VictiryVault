@@ -26,13 +26,13 @@ import 'package:project2k34/View/start_scoring_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await getData3();
   // await MySharedPrefrence.getData();  //important
   // await Firsttimecheck.getData();   //important
 
 
   
-  // await getData("Zoa2WQgwwOQwCPrkMPDD","inning2");
+  await getData("LUfF5u7Pn8VW62idON97","inning1");
+  await getData3();
   // await getScoreCardData();
   //  StudentDummyData().cricketpointTable();
   //  StudentDummyData().FootballPointTable();

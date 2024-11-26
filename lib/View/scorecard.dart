@@ -1,4 +1,4 @@
-mport "package:flutter/material.dart";
+import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 
 class DateTimeb extends StatefulWidget {
@@ -29,7 +29,7 @@ class _DateTimebState extends State<DateTimeb> {
               child: Column(
                     children: [
                       GestureDetector(
-                      onTap: pickDate,
+                      onTap: (){},
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                         decoration: BoxDecoration(
@@ -50,7 +50,7 @@ class _DateTimebState extends State<DateTimeb> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                selectedDate ?? "Select Date",
+                                "",
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.blue.shade200,
@@ -64,7 +64,7 @@ class _DateTimebState extends State<DateTimeb> {
                    const  SizedBox(height: 16),
               
                      GestureDetector(
-                      onTap: pickTime,
+                  
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                         decoration: BoxDecoration(
@@ -84,7 +84,7 @@ class _DateTimebState extends State<DateTimeb> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                selectedTime ?? "Select Time",
+                              "",
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.blue.shade200,

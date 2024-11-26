@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 Color? listcolor = Colors.amber.shade50;
-String matchID = "Zoa2WQgwwOQwCPrkMPDD";
+String matchID = "";
 Color? containercolor = const Color.fromARGB(255, 29, 54, 88);
 Color? buttextcolor = Colors.white;
 Color? shadow = Colors.black;
@@ -22,11 +22,11 @@ dynamic response;
 String didNotPlay2="";
 String didNotPlay1="";
 List matchList=[];
-Future getScoreCardData() async {
+Future getScoreCardData(String id) async {
   // var response=await FirebaseFirestore.instance.collection("cricket_match").doc("matchID").get();
   response = await FirebaseFirestore.instance
       .collection("cricket_match")
-      .doc(matchID)
+      .doc(id)
       .get();
   var response1 = await FirebaseFirestore.instance.collection("Student").get();
   var response3= await FirebaseFirestore.instance.collection("match_list").doc("F2889lT50WRVFwqEKVlC").get();

@@ -6,8 +6,10 @@ import 'package:project2k34/Controller/SharedPrefrence.dart';
 import 'package:project2k34/View/LoginPage.dart';
 import 'package:project2k34/View/Query_msg.dart';
 import 'package:project2k34/View/HomePages/adminHomePage.dart';
+import 'package:project2k34/View/Widgets/victroy_vault.dart';
 import 'package:project2k34/View/admin_home_page.dart';
 import 'package:project2k34/View/dummyData/studentDummyData.dart';
+import 'package:project2k34/View/match_card.dart';
 import 'package:project2k34/View/register_Screen.dart';
 import 'package:project2k34/View/scoring.dart';
 import 'package:project2k34/View/show_schedule.dart';
@@ -21,25 +23,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:project2k34/View/create_schedule.dart';
 import 'package:project2k34/View/scorecardNew.dart';
 import 'package:project2k34/View/start_scoring_page.dart';
-import 'package:project2k34/View/live_score.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await getData3();
   // await MySharedPrefrence.getData();  //important
   // await Firsttimecheck.getData();   //important
 
 
   
-  await getData("Zoa2WQgwwOQwCPrkMPDD","inning2");
+  // await getData("Zoa2WQgwwOQwCPrkMPDD","inning2");
   // await getScoreCardData();
-  //  await initializeData();
   //  StudentDummyData().cricketpointTable();
   //  StudentDummyData().FootballPointTable();
   //  StudentDummyData().KabaddipointTable();
-await getData1();
+// await getData1();
 
 // await initializeData();
   // await getMatchData();
+  
   runApp(const MainApp());
 }
 
@@ -87,7 +89,7 @@ class MainApp extends StatelessWidget {
     // log("${Firsttimecheck.enterfirsttime}");
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-        home: DetailedSchedule() ,
+        home: VictoryVault() ,
     );
   }
 }

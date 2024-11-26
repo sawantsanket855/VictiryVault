@@ -10,6 +10,7 @@ import 'package:project2k34/View/admin_home_page.dart';
 import 'package:project2k34/View/dummyData/studentDummyData.dart';
 import 'package:project2k34/View/register_Screen.dart';
 import 'package:project2k34/View/scoring.dart';
+import 'package:project2k34/View/show_schedule.dart';
 // import 'package:project2k34/View/scoring_cricket.dart';
 import 'package:project2k34/View/splash_Screen01.dart';
 import 'package:project2k34/View/splash_screen.dart';
@@ -29,16 +30,16 @@ void main() async {
 
 
   
-  // await getData("lU5WyOrEnTzKJwsi17pC","inning1");
+  await getData("Zoa2WQgwwOQwCPrkMPDD","inning2");
   // await getScoreCardData();
   //  await initializeData();
   //  StudentDummyData().cricketpointTable();
   //  StudentDummyData().FootballPointTable();
   //  StudentDummyData().KabaddipointTable();
-
+await getData1();
 
 // await initializeData();
-  await getMatchData();
+  // await getMatchData();
   runApp(const MainApp());
 }
 
@@ -86,7 +87,7 @@ class MainApp extends StatelessWidget {
     // log("${Firsttimecheck.enterfirsttime}");
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-        home: StartScoring() ,
+        home: DetailedSchedule() ,
     );
   }
 }

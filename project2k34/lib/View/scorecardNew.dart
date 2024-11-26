@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 Color? listcolor = Colors.amber.shade50;
-String matchID = "deH7rutoGav7h7tUfZhb";
+String matchID = "Zoa2WQgwwOQwCPrkMPDD";
 Color? containercolor = const Color.fromARGB(255, 29, 54, 88);
 Color? buttextcolor = Colors.white;
 Color? shadow = Colors.black;
@@ -21,14 +21,16 @@ String bowl="";
 dynamic response;
 String didNotPlay2="";
 String didNotPlay1="";
+List matchList=[];
 Future getScoreCardData() async {
   // var response=await FirebaseFirestore.instance.collection("cricket_match").doc("matchID").get();
-  log("start");
   response = await FirebaseFirestore.instance
       .collection("cricket_match")
       .doc(matchID)
       .get();
   var response1 = await FirebaseFirestore.instance.collection("Student").get();
+  var response3= await FirebaseFirestore.instance.collection("match_list").doc("F2889lT50WRVFwqEKVlC").get();
+  matchList=response3["cricket"];
   var data = response1.docs;
   for (var i in data) {
     players[i["email"]] = i["name"];
@@ -48,16 +50,10 @@ Future getScoreCardData() async {
     bowlersKey2 = bowlers2.keys.toList();
   }
   
- 
-
-
-
-
   var t1=await FirebaseFirestore.instance.collection("cricket_teams").doc(response["team1"]).get();
   var t2=await FirebaseFirestore.instance.collection("cricket_teams").doc(response["team2"]).get();
   String team1=t1["name"];
   String team2=t2["name"];
-  log("team1 $team1  $team2");
   if((response["toss"]["won"]=="team1" && response["toss"]["choose"]=="bat") || (response["toss"]["won"]=="team2" && response["toss"]["choose"]=="bowl")){
       bat=team1;
       bowl=team2;
@@ -69,14 +65,11 @@ Future getScoreCardData() async {
  
   for(int i=0; i<playing1.length;i++){
     if(bat==team1){
-      log("here1");
       if(!batsmans1.containsKey(playing1[i])){
-        log("here");
         didNotPlay1+= "${players[playing1[i]]}  " ;
       }
     }else{
        if(!batsmans1.containsKey(playing1[i])){
-        log("here");
         didNotPlay2+="${players[playing1[i]]}  " ;
       }
     }
@@ -86,14 +79,11 @@ Future getScoreCardData() async {
  
   for(int i=0; i<playing2.length;i++){
     if(bowl==team2){
-      log("here1");
       if(!batsmans2.containsKey(playing2[i])){
-        log("here");
         didNotPlay2+="${players[playing2[i]]}  " ;
       }
     }else{
       if(!batsmans2.containsKey(playing2[i])){
-        log("here");
         didNotPlay1+="${players[playing2[i]]}  " ;
       }
     }
@@ -108,10 +98,10 @@ class ScoreCard extends StatefulWidget {
 }
 class _ScoreCard extends State {
 
-  String curInning="inning1";
-
+  String curInning=response["status"]==3 || response["status"]==4? "inning1":"inning2";
   Widget wicketLabel(int index) {
     if (curInning=="inning1"){
+      log(curInning);
       if (batsmans1[batsmansKey1[index]]["out"] == true) {
       if(batsmans1[batsmansKey1[index]]["wType"]==1){
         return Row(
@@ -254,7 +244,7 @@ class _ScoreCard extends State {
                         color: Colors.black,
                       )),
                   Text(
-                    "Round 3 : Match No.12",
+                    "${response["round"]} : Match No. ${matchList.indexOf(matchID)+1}",
                     style: GoogleFonts.pridi(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -272,7 +262,6 @@ class _ScoreCard extends State {
                             if (curInning=="inning2"){
                               curInning="inning1";
                               setState((){});
-                              log(curInning);
                             }
                           },
                           child: Container(

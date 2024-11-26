@@ -176,7 +176,7 @@ class _DetailedScheduleState extends State {
                         fontSize: 25,
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
-                      ),
+                      ), 
                     ),
                   ],
                 ),

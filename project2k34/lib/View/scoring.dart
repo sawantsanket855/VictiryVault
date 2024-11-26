@@ -2,9 +2,10 @@ import 'dart:developer';
 import "package:flutter/material.dart";
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:project2k34/View/show_schedule.dart';
 // import './data.dart';
-String matchID="deH7rutoGav7h7tUfZhb";
-String curInning="inning1";
+String matchID="";
+String curInning="";
 Map data={};
 Map playerName={};
  String batsman1="";
@@ -31,6 +32,35 @@ Map playerName={};
   Map bowlers={};
   dynamic response;
   int prevScore=99999;
+  List curOver=[];
+  String innTeam1="";
+  String innTeam2="";
+  String battingTeam="";
+  dynamic responseTeam1;
+  dynamic responseTeam2;
+
+Future checkResult(BuildContext context)async{
+  if(curInning=="inning1"){
+    log("inning overr");
+    Navigator.pop(context);
+    await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":4});
+  }else{
+  await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":6});
+  if(score>prevScore){
+    await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"winner":innTeam2});
+    if(response["round"]!="final"){
+    await FirebaseFirestore.instance.collection("cricket_match").doc(response["nextMatch"]).update({response["nextTeamNumber"]:innTeam2});
+  }
+  }else{
+    await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"winner":innTeam1});
+    if(response["round"]!="final"){
+    await FirebaseFirestore.instance.collection("cricket_match").doc(response["nextMatch"]).update({response["nextTeamNumber"]:innTeam1});
+  }
+  }
+}
+Navigator.pop(context);
+}
+
 void changeStrike(){
   if(strike==1){
     strike=2;
@@ -39,28 +69,42 @@ void changeStrike(){
   }
 }
 
-Future getData()async{
+Future getData(String selectedID,String selectedInning)async{
+  log(selectedID);
+  matchID=selectedID;
+  curInning=selectedInning;
+
   // var response=await FirebaseFirestore.instance.collection("cricket_match").doc("matchID").get();
   response = await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).get();
+   responseTeam1=await FirebaseFirestore.instance.collection("cricket_teams").doc(response["team1"]).get();
+   responseTeam2=await FirebaseFirestore.instance.collection("cricket_teams").doc(response["team2"]).get();
+  print(responseTeam1["players"]);
   var response1=await FirebaseFirestore.instance.collection("Student").get();
   var res=response1.docs;
   if(curInning=="inning1"){
     if((response["toss"]["won"]=="team1" && response["toss"]["choose"]=="bat") || (response["toss"]["won"]=="team2" && response["toss"]["choose"]=="bowl")){
-      playing1=response["playing1"];
-      playing2=response["playing2"];
+      battingTeam="team1";
+      playing1=responseTeam1["players"];
+      playing2=responseTeam2["players"];
     }else{
-      playing2=response["playing1"];
-      playing1=response["playing2"];
+      battingTeam="team2";
+      playing2=responseTeam1["players"];
+      playing1=responseTeam2["players"];
     }
   }else{
     prevScore=response["inning1"]["score"];
-    log("$prevScore");
      if((response["toss"]["won"]=="team1" && response["toss"]["choose"]=="bat") || (response["toss"]["won"]=="team2" && response["toss"]["choose"]=="bowl")){
-      playing2=response["playing1"];
-      playing1=response["playing2"];
+      battingTeam="team2";
+      playing2=responseTeam1["players"];
+      playing1=responseTeam2["players"];
+      innTeam1=response["team1"];
+      innTeam2=response["team2"];
     }else{
-      playing1=response["playing1"];
-      playing2=response["playing2"];
+      battingTeam="team1";
+      playing1=responseTeam1["players"];
+      playing2=responseTeam2["players"];
+      innTeam1=response["team2"];
+      innTeam2=response["team1"];
     }
   }
   
@@ -73,7 +117,7 @@ Future getData()async{
   inning["wicket"]=wicket;
   inning["score"]=score;
   await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({curInning:inning}); 
-  await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":curInning=="innning1"?3:5});
+  await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":curInning=="inning1"?3:5});
   }
 
  
@@ -97,12 +141,83 @@ class _ScoreAppState extends State {
     setState((){});
   }
 
+
+Color? getBallColor(int index){
+  if(curOver[index]["wicket"]!=null){
+    return Colors.red;
+
+  }else if(curOver[index]["wide/no"]!="NA"){
+    return null;
+  }else if(curOver[index]["byes/leg"]!="NA"){
+    return null;
+  }else{
+    if(curOver[index]["run"]==4){
+      return Colors.amber;
+      }else if(curOver[index]["run"]==6){
+        return Colors.blue ;
+      }else {
+        return null;
+      }
+}
+}
+
+Widget getBallDetail(int index){
+  if(curOver[index]["wicket"]!=null){
+    return const Text("W",
+    style: TextStyle(
+       fontWeight: FontWeight.bold,
+       fontSize:15,),);
+
+
+  }else if(curOver[index]["wide/no"]!="NA"){
+    if(curOver[index]["wide/no"]=="wide"){
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+        const Text("wd"),
+        Text(curOver[index]["run"]!=0 ? "+${curOver[index]["run"]}" : ""),
+      ],);
+    }else{
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+        const Text("nb"),
+        Text(curOver[index]["run"]!=0 ? "+${curOver[index]["run"]}" : ""),
+      ],);
+    }
+  }else if(curOver[index]["byes/leg"]!="NA"){
+    if(curOver[index]["byes/leg"]=="byes"){
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+        const Text("b"),
+        Text(curOver[index]["run"]!=0 ? "+${curOver[index]["run"]}" : ""),
+      ],);
+    }else{
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+        const Text("lb"),
+        Text(curOver[index]["run"]!=0 ? "+${curOver[index]["run"]}" : ""),
+      ],);
+    }
+  }else{
+    if(curOver[index]["run"]==0){
+      return const Icon(Icons.circle,size: 12,);
+      }else{
+        return Text("${curOver[index]["run"]}");
+      }
+}
+}
+
 void showBowler1(){
   showDialog(context: context,
 builder: (context) {
 return showBowler();});
 }
 Widget showBowler(){
+  log("over");
+  print(curOver);
   return AlertDialog(
       content: StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
@@ -373,6 +488,7 @@ return showBatsman(num+2);});
                   inning["ball"]=ball;
                   inning["wicket"]=wicket;
                   inning["score"]=score;
+                  curOver.add({"wide/no":checkWide?"wide":checkNoBall?"noBall":"NA","byes/leg":checkByes?"byes":checkLegByes?"legByes":"NA","run":selectedRun,"wicket":true});
 
 
                 if(checkWide||checkNoBall){
@@ -394,8 +510,8 @@ return showBatsman(num+2);});
                   batsmans[wBatsman==1?batsman1:batsman2]={"run":batsmans[wBatsman==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":true,"wType":wType,"wBowler":bowler1,"wFielder":playing2[wFielder],"six":batsmans[wBatsman==1?batsman1:batsman2]["six"],"four":batsmans[wBatsman==1?batsman1:batsman2]["four"]};
 
                   await doc.update( {curInning:inning});
-                  if(ball>=response["totalOvers"]||wicket>=10||score>prevScore){
-                  await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":curInning=="innning1"?4:6}); 
+                  if(ball>=response["totalOvers"]*6||wicket>=10||score>prevScore){
+                  await checkResult(context);
                   }else if(ball%6==0 && !checkWide && !checkNoBall){
                     showBowler1();
                     }
@@ -507,8 +623,9 @@ return showBatsman(num+2);});
                   inning["ball"]=ball;
                   inning["wicket"]=wicket;
                   inning["score"]=score;
+                  curOver.add({"wide/no":checkWide?"wide":checkNoBall?"noBall":"NA","byes/leg":checkByes?"byes":checkLegByes?"legByes":"NA","run":selectedRun,"wicket":true});
                   if(ball>=response["totalOvers"]*6){
-                    await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":curInning=="innning1"?4:6}); 
+                    await checkResult(context); 
                   }else if(ball%6==0 && !checkWide && !checkNoBall){
                     showBowler1();
                   }
@@ -536,7 +653,7 @@ return showBatsman(num+2);});
 
                   await doc.update( {curInning:inning});
                   if(wicket>=10 || score>prevScore){
-                    await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":curInning=="innning1"?4:6}); 
+                    await checkResult(context);
                   }
                   showBatsman1(wBatsman);
                   if(selectedRun%2==1){
@@ -778,7 +895,7 @@ return showBatsman(num+2);});
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Team A v/s Team B",
+          "${responseTeam1['name']} v/s ${responseTeam2['name']}",
           style: GoogleFonts.oxygen(
               fontSize: 30, fontWeight: FontWeight.w600, color: Colors.white),
         ),
@@ -802,10 +919,16 @@ return showBatsman(num+2);});
                     const SizedBox(
                       height: 15,
                     ),
-                    Text(
-                      "Team A ,1st innings",
-                      style: GoogleFonts.oxygen(
-                          fontSize: 15, fontWeight: FontWeight.w500),
+                    Row(
+                      children: [
+                        Text(battingTeam=="team1" ? responseTeam1["name"]:responseTeam2["name"],
+                          style: GoogleFonts.oxygen(
+                              fontSize: 15, fontWeight: FontWeight.w500),
+                        ),
+                        Text(curInning=="inning1"? "  ,1st innings" : "  ,2nd inning",
+                        style: GoogleFonts.oxygen(
+                              fontSize: 15, fontWeight: FontWeight.w500),)
+                      ],
                     ),
                     const SizedBox(
                       height: 8,
@@ -825,24 +948,7 @@ return showBatsman(num+2);});
                           style: GoogleFonts.quicksand(
                               fontSize: 20, fontWeight: FontWeight.w300),
                         ),
-                        const Spacer(),
-                        Column(
-                          children: [
-                            Text(
-                              "CRR: ",
-                              style: GoogleFonts.oxygen(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              "0.00",
-                              style: GoogleFonts.quicksand(
-                                  fontSize: 18, fontWeight: FontWeight.w700),
-                            ),
-                          ],
-                        )
+                        const Spacer()
                       ],
                     )
                   ],
@@ -1050,15 +1156,15 @@ return showBatsman(num+2);});
                     const SizedBox(
                       width: 15,
                     ),
-                    const SizedBox(width: 20, height: 20, child: Text("0")),
+                     SizedBox(width: 20, height: 20, child: Text(bowler1!=""?inning["bowler"][bowler1]!=""?"${inning["bowler"][bowler1]["run"]}": "" :"")),
                     const SizedBox(
                       width: 15,
                     ),
-                    const SizedBox(width: 20, height: 20, child: Text("0")),
+                    SizedBox(width: 20, height: 20, child: Text(bowler1!=""?inning["bowler"][bowler1]!=""?"${inning["bowler"][bowler1]["wicket"]}": "" :"")),
                     const SizedBox(
                       width: 15,
                     ),
-                    const SizedBox(width: 20, height: 20, child: Text("0")),
+                    SizedBox(width: 30, height: 20, child:Text(bowler1!=""?inning["bowler"][bowler1]!="" && inning["bowler"][bowler1]["ball"]!=0 ? "${inning["bowler"][bowler1]["run"] / inning["bowler"][bowler1]["ball"]*6}":"0":"0") ,)
                   ],
                 ),
               ),
@@ -1072,12 +1178,48 @@ return showBatsman(num+2);});
                 borderRadius: BorderRadius.circular(5),
                 color: const Color.fromARGB(255, 232, 228, 228),
               ),
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  "This over: ",
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
+              child: Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "This over: ",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  SizedBox(
+                    width:300,
+                    height:60,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: curOver.length,
+                      itemBuilder: (context,index){
+                        return Container(
+                          alignment: Alignment.center,
+                          decoration:BoxDecoration(
+                             color:getBallColor(index),
+                             border: Border.all(),
+                            shape: BoxShape.circle,
+                          ),
+                          margin:const EdgeInsets.all(5),
+                          // height:10,
+                          width:42,
+                          child: getBallDetail(index),
+                          // const Row(children: [
+                          //   Text("Wd",
+                          //   style: TextStyle(
+                          //     fontWeight: FontWeight.bold,
+                          //     fontSize:15,
+                          //   ),
+                          //   ),
+                          //   Text("+4"),
+                          // ],)
+                        );
+                      }
+                      )
+
+                  ),
+                ],
               ),
             ),
           ),
@@ -1465,6 +1607,9 @@ return showBatsman(num+2);});
                     });
                 }
                 else {
+                  if(selectedRun%2==1){
+                  changeStrike();
+                }
                   ballNumber++;
                   var doc= FirebaseFirestore.instance.collection("cricket_match").doc(matchID);
                   int run=selectedRun;
@@ -1475,17 +1620,21 @@ return showBatsman(num+2);});
                      inning["ballNumber"]=data;
                      inning["ball"]=ball;
                      inning["score"]=score;
+                     curOver.add({"wide/no":"wide","byes/leg":"byes","run":run,});
                       bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run+1,"ball":bowlers[bowler1]["ball"],"wicket":bowlers[bowler1]["wicket"]};
                     batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     await doc.update( {curInning:inning});
+                    clearFlags();
                   }else{
                      data.addAll({"$ballNumber":{"wide/no":"wide","byes/leg":"NA","run":run,}});
                      inning["ballNumber"]=data;
                      inning["ball"]=ball;
                      inning["score"]=score;
+                     curOver.add({"wide/no":"wide","byes/leg":"NA","run":run,});
                      bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run+1,"ball":bowlers[bowler1]["ball"],"wicket":bowlers[bowler1]["wicket"]};
                     batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"],"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     await doc.update( {curInning:inning});
+                    clearFlags();
                   }
                   }
                   else if(checkNoBall){
@@ -1495,9 +1644,11 @@ return showBatsman(num+2);});
                      inning["ballNumber"]=data;
                      inning["ball"]=ball;
                      inning["score"]=score;
+                     curOver.add({"wide/no":"noBall","byes/leg":"byes","run":run,});
                       bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run+1,"ball":bowlers[bowler1]["ball"],"wicket":bowlers[bowler1]["wicket"]};
                     batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     await doc.update( {curInning:inning});
+                    clearFlags();
                   }
                   else if(checkLegByes){
                     score+=run;
@@ -1505,18 +1656,22 @@ return showBatsman(num+2);});
                    inning["ballNumber"]=data;
                      inning["ball"]=ball;
                      inning["score"]=score;
+                     curOver.add({"wide/no":"noBall","byes/leg":"legByes","run":run,});
                       bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run+1,"ball":bowlers[bowler1]["ball"],"wicket":bowlers[bowler1]["wicket"]};
                     batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     await doc.update( {curInning:inning});
+                    clearFlags();
                 }
                 else{
                    data.addAll({"$ballNumber":{"wide/no":"noBall","byes/leg":"NA","run":run,}});
                    inning["ballNumber"]=data;
                     inning["ball"]=ball;
                     inning["score"]=score;
+                    curOver.add({"wide/no":"noBall","byes/leg":"NA","run":run,});
                     bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run+1,"ball":bowlers[bowler1]["ball"],"wicket":bowlers[bowler1]["wicket"]};
                     batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"]+run,"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"]+(run==6?1:0),"four":batsmans[strike==1?batsman1:batsman2]["four"]+(run==4?1:0)};
                     await doc.update( {curInning:inning});
+                    clearFlags();
                 }
                   }
                  else{
@@ -1527,42 +1682,43 @@ return showBatsman(num+2);});
                     inning["ballNumber"]=data;
                      inning["ball"]=ball;
                      inning["score"]=score;
+                     curOver.add({"wide/no":"NA","byes/leg":"legByes","run":run,});
                     bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run,"ball":bowlers[bowler1]["ball"]+1,"wicket":bowlers[bowler1]["wicket"]};
                     batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     
                     await doc.update( {curInning:inning});
+                    clearFlags();
                   }else if(checkByes){
                     data.addAll({"$ballNumber":{"wide/no":"NA","byes/leg":"byes","run":run,}});
                     inning["ballNumber"]=data;
                      inning["ball"]=ball;
                      inning["score"]=score;
+                     curOver.add({"wide/no":"NA","byes/leg":"byes","run":run,});
+
                     bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run,"ball":bowlers[bowler1]["ball"]+1,"wicket":bowlers[bowler1]["wicket"]};
                     batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"],"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"],"four":batsmans[strike==1?batsman1:batsman2]["four"]};
                     await doc.update( {curInning:inning});
+                    clearFlags();
                   }else{
                      data.addAll({"$ballNumber":{"wide/no":"NA","byes/leg":"NA","run":run,}});
                      inning["ballNumber"]=data;
                      inning["ball"]=ball;
                      inning["score"]=score;
+                     curOver.add({"wide/no":"NA","byes/leg":"NA","run":run,});
                     bowlers[bowler1]={"run":bowlers[bowler1]["run"]+run,"ball":bowlers[bowler1]["ball"]+1,"wicket":bowlers[bowler1]["wicket"]};
                     batsmans[strike==1?batsman1:batsman2]={"run":batsmans[strike==1?batsman1:batsman2]["run"]+run,"ball":batsmans[strike==1?batsman1:batsman2]["ball"]+1,"out":false,"six":batsmans[strike==1?batsman1:batsman2]["six"]+(run==6?1:0),"four":batsmans[strike==1?batsman1:batsman2]["four"]+(run==4?1:0)};
                     await doc.update({curInning:inning}); 
+                    clearFlags();
                   }
                     
                   }
                   if(ball>=response["totalOvers"]*6 || score>prevScore){
-                    await FirebaseFirestore.instance.collection("cricket_match").doc(matchID).update({"status":curInning=="innning1"?4:6}); 
-                    Navigator.pop(context);
+                      await checkResult(context);
                   }else if(ball%6==0 && !checkWide && !checkNoBall){
                     showBowler1();
                 }
                 }
-                if(selectedRun%2==1){
-                  changeStrike();
-                }
-                if(!checkWicket){
-                  clearFlags();
-                }
+                
                 }
                 
               

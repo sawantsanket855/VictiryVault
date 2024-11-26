@@ -152,7 +152,7 @@ log("2");
           await FirebaseFirestore.instance
               .collection("cricket_match")
               .doc(metaData.id)
-              .update({"id": metaData.id, "winner": "null", "time": "null"});
+              .update({"id": metaData.id, "winner": "null", "time": "null","status":0});
           matches.addAll([metaData.id]);
           FirebaseFirestore.instance
               .collection("match_list")
@@ -170,7 +170,7 @@ log("2");
           await FirebaseFirestore.instance
               .collection("cricket_match")
               .doc(metaData.id)
-              .update({"id": metaData.id, "winner": "team1", "time": "null"});
+              .update({"id": metaData.id, "winner": "team1", "time": "null","status":0});
           matches.addAll([metaData.id]);
           FirebaseFirestore.instance
               .collection("match_list")
@@ -195,7 +195,7 @@ log("2");
         await FirebaseFirestore.instance
             .collection("cricket_match")
             .doc(metaData.id)
-            .update({"id": metaData.id, "winner": "null", "time": "null"});
+            .update({"id": metaData.id, "winner": "null", "time": "null","status":0});
         matches.addAll([metaData.id]);
         await FirebaseFirestore.instance
             .collection("match_list")
@@ -229,7 +229,7 @@ log("2");
         await FirebaseFirestore.instance
             .collection("cricket_match")
             .doc(metaData.id)
-            .update({"id": metaData.id, "winner": "null", "time": "null"});
+            .update({"id": metaData.id, "winner": "null", "time": "null","status":0});
         matches.addAll([metaData.id]);
         await FirebaseFirestore.instance
             .collection("match_list")
@@ -263,7 +263,7 @@ log("2");
         await FirebaseFirestore.instance
             .collection("cricket_match")
             .doc(metaData.id)
-            .update({"id": metaData.id, "winner": "null", "time": "null"});
+            .update({"id": metaData.id, "winner": "null", "time": "null","status":0});
         matches.addAll([metaData.id]);
         await FirebaseFirestore.instance
             .collection("match_list")
@@ -296,7 +296,7 @@ log("2");
       await FirebaseFirestore.instance
           .collection("cricket_match")
           .doc(metaData.id)
-          .update({"id": metaData.id, "winner": "null", "time": "null"});
+          .update({"id": metaData.id, "winner": "null", "time": "null","status":0});
       matches.addAll([metaData.id]);
       await FirebaseFirestore.instance
           .collection("match_list")
@@ -342,7 +342,7 @@ log("2");
           await FirebaseFirestore.instance
               .collection("cricket_match")
               .doc(metaData.id)
-              .update({"id": metaData.id, "winner": "null", "time": "null"});
+              .update({"id": metaData.id, "winner": "null", "time": "null","status":0});
           matches.addAll([metaData.id]);
           FirebaseFirestore.instance
               .collection("match_list")
@@ -360,7 +360,7 @@ log("2");
           await FirebaseFirestore.instance
               .collection("cricket_match")
               .doc(metaData.id)
-              .update({"id": metaData.id, "winner": "team1", "time": "null"});
+              .update({"id": metaData.id, "winner": "team1", "time": "null","status":0});
           matches.addAll([metaData.id]);
           FirebaseFirestore.instance
               .collection("match_list")
@@ -384,7 +384,7 @@ log("2");
         await FirebaseFirestore.instance
             .collection("cricket_match")
             .doc(metaData.id)
-            .update({"id": metaData.id, "winner": "null", "time": "null"});
+            .update({"id": metaData.id, "winner": "null", "time": "null","status":0});
         matches.addAll([metaData.id]);
         await FirebaseFirestore.instance
             .collection("match_list")
@@ -422,7 +422,7 @@ log("2");
       await FirebaseFirestore.instance
           .collection("cricket_match")
           .doc(metaData.id)
-          .update({"id": metaData.id, "winner": "null", "time": "null"});
+          .update({"id": metaData.id, "winner": "null", "time": "null","status":0});
       matches.addAll([metaData.id]);
       await FirebaseFirestore.instance
           .collection("match_list")

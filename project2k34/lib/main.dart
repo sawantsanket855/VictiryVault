@@ -10,6 +10,7 @@ import 'package:project2k34/View/admin_home_page.dart';
 import 'package:project2k34/View/dummyData/studentDummyData.dart';
 import 'package:project2k34/View/register_Screen.dart';
 import 'package:project2k34/View/scoring.dart';
+import 'package:project2k34/View/show_schedule.dart';
 // import 'package:project2k34/View/scoring_cricket.dart';
 import 'package:project2k34/View/splash_Screen01.dart';
 import 'package:project2k34/View/splash_screen.dart';
@@ -19,22 +20,26 @@ import 'package:project2k34/View/uplode_demo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:project2k34/View/create_schedule.dart';
 import 'package:project2k34/View/scorecardNew.dart';
+import 'package:project2k34/View/start_scoring_page.dart';
+import 'package:project2k34/View/live_score.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await MySharedPrefrence.getData();
-  await Firsttimecheck.getData();
-  // await initializeData();
-  // await getData();
-  await getScoreCardData();
+  // await MySharedPrefrence.getData();  //important
+  // await Firsttimecheck.getData();   //important
+
+
+  
+  await getData("Zoa2WQgwwOQwCPrkMPDD","inning2");
+  // await getScoreCardData();
   //  await initializeData();
   //  StudentDummyData().cricketpointTable();
   //  StudentDummyData().FootballPointTable();
   //  StudentDummyData().KabaddipointTable();
+await getData1();
 
-
-
-
+// await initializeData();
+  // await getMatchData();
   runApp(const MainApp());
 }
 
@@ -43,8 +48,7 @@ class MainApp extends StatelessWidget {
   const MainApp({super.key});
   Widget nextScreen(){
     if(MySharedPrefrence.isLogin){
-      return const ScoreCard();
-      // return SplashScreen03();
+      return SplashScreen03();
 
 
       // if(MySharedPrefrence.myrole=='Admin'){
@@ -76,19 +80,14 @@ class MainApp extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    log("${MySharedPrefrence.isLogin}");
-    log("${MySharedPrefrence.email}");
-    log("${MySharedPrefrence.name}");
-    log("${MySharedPrefrence.myrole}");
-    log("${Firsttimecheck.enterfirsttime}");
-    return  MaterialApp(
+    // log("${MySharedPrefrence.isLogin}");
+    // log("${MySharedPrefrence.email}");
+    // log("${MySharedPrefrence.name}");
+    // log("${MySharedPrefrence.myrole}");
+    // log("${Firsttimecheck.enterfirsttime}");
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-        home:nextScreen() ,
-   
-    
-      
-      
-      
+        home: DetailedSchedule() ,
     );
   }
 }
